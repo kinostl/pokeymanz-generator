@@ -111,7 +111,8 @@ const MoveSearch = () => {
                     <tr>
                       <td class={style.move_name}>{move.name}</td>
                       <td class={style.move_effect}>
-                        {move.effect_entries[0].short_effect}
+                        {move.effect_entries[0]?.short_effect ||
+                          'Missing Description'}
                       </td>
                       <td class={style.move_type}>{move.type.name}</td>
                       <td class={style.move_category}>
