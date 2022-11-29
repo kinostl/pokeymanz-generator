@@ -23,6 +23,38 @@ const MoveSearch = () => {
     )
   }, [])
 
+  const getMovesSortedByName = async res => {
+    const sortedMoves = groupBy(
+      res.moves,
+      o =>
+        o.version_group_details[o.version_group_details.length - 1]
+          .move_learn_method.name
+    )
+    const sortedMoveUrls = mapValues(sortedMoves, o =>
+      o.map(entry => entry.move.url)
+    )
+    const sortedMovePromises = toPairs(sortedMoveUrls).map(async pair => [
+      pair[0],
+      await P.resource(`api/v2/move-learn-method/${pair[0]}`),
+      await P.resource(pair[1])
+    ])
+    const sortedMoveRes = await Promise.all(sortedMovePromises)
+    const getEnglish = o => o.language.name === 'en'
+    const sortedMovesByName = sortedMoveRes.map(method => [
+      method[0],
+      method[1].names.filter(getEnglish)[0].name,
+      method[1].descriptions.filter(getEnglish)[0].description,
+      method[2].map(o => ({
+        ...o,
+        name: o.names.filter(getEnglish)[0].name,
+        effect: o.flavor_text_entries.filter(getEnglish).reverse()[0]
+          .flavor_text
+      }))
+    ])
+
+    return sortedMovesByName
+  }
+
   const onChange = async e => {
     e.preventDefault()
     setPokemonSearchError(false)
@@ -30,40 +62,44 @@ const MoveSearch = () => {
     if (listOfPokemonNames.value.includes(pokemon)) {
       setLoading(true)
       const res = await P.getPokemonByName(pokemon)
-      const sortedMoves = groupBy(
-        res.moves,
-        o =>
-          o.version_group_details[o.version_group_details.length - 1]
-            .move_learn_method.name
-      )
-      const sortedMoveUrls = mapValues(sortedMoves, o =>
-        o.map(entry => entry.move.url)
-      )
-      const sortedMovePromises = toPairs(sortedMoveUrls).map(async pair => [
-        pair[0],
-        await P.resource(`api/v2/move-learn-method/${pair[0]}`),
-        await P.resource(pair[1])
-      ])
-      const sortedMoveRes = await Promise.all(sortedMovePromises)
-      const sortedMovesByName = sortedMoveRes.map(method => [
-        method[0],
-        method[1].names.filter(o => o.language.name === 'en')[0].name,
-        method[1].descriptions.filter(o => o.language.name === 'en')[0]
-          .description,
-        method[2].map(o => ({
-          ...o,
-          name: o.names.filter(o => o.language.name === 'en')[0].name
-        }))
-      ])
+      const moves = await getMovesSortedByName(res)
 
       currentPokemon.value = {
         ...res,
-        moves: sortedMovesByName
+        moves
       }
       setLoading(false)
     } else {
       setPokemonSearchError(true)
     }
+  }
+
+  // Doing it this way to help with copy pasting
+  const typeColors = {
+    normal: '#c6c6a7',
+    fighting: '#d67873',
+    flying: '#c6b7f5',
+    poison: '#c183c1',
+    ground: '#ebd69d',
+    rock: '#d1c17d',
+    bug: '#c6d16e',
+    ghost: '#a292bc',
+    steel: '#d1d1e0',
+    fire: '#f5ac78',
+    water: '#9db7f5',
+    grass: '#a7db8d',
+    electric: '#fae078',
+    psychic: '#fa92b2',
+    ice: '#bce6e6',
+    dragon: '#a27dfa',
+    dark: '#a29288',
+    fairy: '#f4bdc9'
+  }
+
+  const categoryColors = {
+    physical: '#c92112',
+    special: '#4f5870',
+    status: '#8c888c'
   }
 
   return (
@@ -110,12 +146,21 @@ const MoveSearch = () => {
                   {o[3].map(move => (
                     <tr>
                       <td class={style.move_name}>{move.name}</td>
-                      <td class={style.move_effect}>
-                        {move.effect_entries[0]?.short_effect ||
-                          'Missing Description'}
+                      <td class={style.move_effect}>{move.effect}</td>
+                      <td
+                        style={`background-color:${
+                          typeColors[move.type.name]
+                        };color:rgba(0,0,0,0.5)`}
+                        class={style.move_type}
+                      >
+                        {move.type.name}
                       </td>
-                      <td class={style.move_type}>{move.type.name}</td>
-                      <td class={style.move_category}>
+                      <td
+                        style={`background-color:${
+                          categoryColors[move.damage_class.name]
+                        };color:rgba(255,255,255,0.75)`}
+                        class={style.move_category}
+                      >
                         {move.damage_class.name}
                       </td>
                     </tr>
