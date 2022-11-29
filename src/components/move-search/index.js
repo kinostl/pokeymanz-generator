@@ -12,7 +12,7 @@ const P = new Pokedex()
 const listOfPokemonNames = signal([])
 const currentPokemon = signal({})
 
-const Home = () => {
+const MoveSearch = () => {
   const [currentPokemonName, setCurrentPokemonName] = useState()
   const [pokemonSearchError, setPokemonSearchError] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -129,4 +129,4 @@ const Home = () => {
   )
 }
 
-export default Home
+export default MoveSearch
