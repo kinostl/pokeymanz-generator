@@ -1,0 +1,31 @@
+.home {
+  padding: 56px 20px;
+  min-height: 100%;
+  width: 100%;
+}
+
+.moves_area {
+  display: flex;
+  flex-direction: column;
+}
+
+section {
+  order: 3;
+}
+
+#level-up {
+  order: 0;
+}
+
+#machine {
+  order: 1;
+}
+
+#egg {
+  order: 2;
+}
+
+.move_type,
+.move_category {
+  text-transform: capitalize;
+}
