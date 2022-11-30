@@ -4,7 +4,8 @@ import mapValues from 'lodash/mapValues'
 import toPairs from 'lodash/toPairs'
 
 const P = new Pokedex()
-const getMovesSortedByName = async res => {
+const getMovesSortedByName = async pokemon => {
+  const res = await P.getPokemonByName(pokemon)
   const sortedMoves = groupBy(
     res.moves,
     o =>
@@ -53,7 +54,10 @@ const getMovesSortedByName = async res => {
       return 0
     })
 
-  return sortedMovesByName
+  return {
+    ...res,
+    moves: sortedMovesByName
+  }
 }
 
 export default getMovesSortedByName

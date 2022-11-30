@@ -1,42 +1,32 @@
 import { h } from 'preact'
-import { useEffect, useState } from 'preact/hooks'
-import { signal } from '@preact/signals'
+import { useContext, useEffect, useState } from 'preact/hooks'
+import { signal, useSignal } from '@preact/signals'
 import style from './style.css'
-import getMovesSortedByName from '../../lib/getMovesSortedByName'
+import getPokemonWithMovesSortedByName from '../../lib/getPokemonWithMovesSortedByName'
 import { typeColors, categoryColors } from '../../lib/themeColors'
 import startCase from 'lodash/startCase'
+import AppState from '../../appState'
 
-import { Pokedex } from 'pokeapi-js-wrapper'
-
-const MoveSearch = () => {
-  const P = new Pokedex()
-  const [currentPokemonName, setCurrentPokemonName] = useState()
-  const [currentPokemon, setCurrentPokemon] = useState({})
-  const [pokemonSearchError, setPokemonSearchError] = useState(false)
-  const [listOfPokemonNames, setListofPokemonNames] = useState([])
-  const [loading, setLoading] = useState(false)
-
-  useEffect(async () => {
-    const res = await P.resource('api/v2/pokedex/1/')
-    const names = res.pokemon_entries.map(entry => entry.pokemon_species.name)
-    setListofPokemonNames(names)
-  }, [])
+const PokemonSearch = () => {
+  const pokemonSearchError = useSignal('')
+  const loading = useSignal(false)
+  const currentPokemonInput = useSignal('')
+  const { listOfPokemonNames, currentPokemon, currentPokemonName } =
+    useContext(AppState)
 
   const onSubmit = async e => {
     e.preventDefault()
-    setPokemonSearchError(false)
-    const pokemon = currentPokemonName.toLowerCase()
-    if (listOfPokemonNames.includes(pokemon)) {
-      setLoading(true)
-      const res = await P.getPokemonByName(pokemon)
-      const moves = await getMovesSortedByName(res)
-      setCurrentPokemon({
-        ...res,
-        moves
-      })
-      setLoading(false)
+    pokemonSearchError.value = ''
+    const pokemon = currentPokemonInput.value.toLowerCase()
+    if (listOfPokemonNames.value.includes(pokemon)) {
+      currentPokemonName.value = pokemon
+      loading.value = true
+      const pokemonWithMovesSortedByName =
+        await getPokemonWithMovesSortedByName(pokemon)
+      currentPokemon.value = pokemonWithMovesSortedByName
+      loading.value = false
     } else {
-      setPokemonSearchError(true)
+      pokemonSearchError.value = <p>Could not find that pokemon</p>
     }
   }
 
@@ -58,31 +48,31 @@ const MoveSearch = () => {
         <input
           list='pokemon'
           name='pokemon'
-          value={currentPokemonName}
+          value={currentPokemonInput}
           onInput={e => {
-            setCurrentPokemonName(e.target.value)
+            currentPokemonInput.value = e.target.value
           }}
         />
         <input type='submit' value='Search by Pokemon' />
       </form>
-      {pokemonSearchError ? <p>Could not find that pokemon</p> : ''}
+      {pokemonSearchError}
 
       <datalist id='pokemon'>
-        {listOfPokemonNames.map(entry => (
+        {listOfPokemonNames.value.map(entry => (
           <option value={entry}></option>
         ))}
       </datalist>
-      {!loading ? (
+      {!loading.value ? (
         <img
-          src={currentPokemon.sprites?.front_default}
+          src={currentPokemon.value.sprites?.front_default}
           style='position:absolute;top:0;right:0;'
         />
       ) : (
         ''
       )}
       <div class={style.moves_area}>
-        {!loading && currentPokemon.moves
-          ? currentPokemon.moves.map(o => (
+        {!loading.value && currentPokemon.value.moves
+          ? currentPokemon.value.moves.map(o => (
               <section id={style[o[0]] || o[0]}>
                 <header>
                   <h2>{o[1]}</h2>
@@ -121,10 +111,10 @@ const MoveSearch = () => {
               </section>
             ))
           : ''}
-        {loading ? 'Loading a lot of data, please wait. ⏳' : ''}
+        {loading.value ? 'Loading a lot of data, please wait. ⏳' : ''}
       </div>
     </div>
   )
 }
 
-export default MoveSearch
+export default PokemonSearch
