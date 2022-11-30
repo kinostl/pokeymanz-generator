@@ -1,5 +1,13 @@
 # pokemon_generator
 
+Type in a name, hit submit, and get a table of moves that you can copy into a Google Doc to get the format everyone likes.
+
+## Contributing
+
+`git clone https://github.com/kinostl/pokeymanz-generator/` then `npm install` and then `npm run dev`. We're using preact for all of this.
+
+Contributions need to be able to run on a static website. This means no databases or anything account-like. All effort should happen on the client's host computer.
+
 ## CLI Commands
 
 ``` bash
