@@ -4,26 +4,11 @@ import mapValues from 'lodash/mapValues'
 import toPairs from 'lodash/toPairs'
 
 const P = new Pokedex()
-const getMovesSortedByName = async pokemon => {
-  const res = await P.getPokemonByName(pokemon)
-  const sortedMoves = groupBy(
-    res.moves,
-    o =>
-      o.version_group_details[o.version_group_details.length - 1]
-        .move_learn_method.name
-  )
-  const sortedMoveUrls = mapValues(sortedMoves, o =>
-    o.map(entry => entry.move.url)
-  )
-  const sortedMovePromises = toPairs(sortedMoveUrls).map(async pair => [
-    pair[0],
-    await P.resource(`api/v2/move-learn-method/${pair[0]}`),
-    await P.resource(pair[1])
-  ])
-  const sortedMoveRes = await Promise.all(sortedMovePromises)
+const getFormattedMoves = moves => {
   const getEnglish = o => o.language.name === 'en'
   const moveOrder = ['level-up', 'machine', 'egg']
-  const sortedMovesByName = sortedMoveRes
+
+  const formattedMoves = moves
     .map(method => [
       method[0],
       method[1].names.filter(getEnglish)[0].name,
@@ -54,10 +39,31 @@ const getMovesSortedByName = async pokemon => {
       return 0
     })
 
+  return formattedMoves
+}
+const getFormattedPokemon = async pokemonName => {
+  const pokemon = await P.getPokemonByName(pokemonName)
+  const sortedMoves = groupBy(
+    pokemon.moves,
+    o =>
+      o.version_group_details[o.version_group_details.length - 1]
+        .move_learn_method.name
+  )
+  const sortedMoveUrls = mapValues(sortedMoves, o =>
+    o.map(entry => entry.move.url)
+  )
+  const sortedMovePromises = toPairs(sortedMoveUrls).map(async pair => [
+    pair[0],
+    await P.resource(`api/v2/move-learn-method/${pair[0]}`),
+    await P.resource(pair[1])
+  ])
+  const sortedMoveRes = await Promise.all(sortedMovePromises)
+  const formattedMoves = getFormattedMoves(sortedMoveRes)
+
   return {
-    ...res,
-    moves: sortedMovesByName
+    ...pokemon,
+    moves: formattedMoves
   }
 }
 
-export default getMovesSortedByName
+export default getFormattedPokemon

@@ -2,7 +2,7 @@ import { h } from 'preact'
 import { useContext } from 'preact/hooks'
 import { useSignal } from '@preact/signals'
 import style from './style.css'
-import getPokemonWithMovesSortedByName from '../../lib/getPokemonWithMovesSortedByName'
+import getFormattedPokemon from '../../lib/getFormattedPokemon'
 import AppState from '../../appState'
 
 const PokemonSearch = () => {
@@ -18,9 +18,8 @@ const PokemonSearch = () => {
     if (listOfPokemonNames.value.includes(pokemon)) {
       currentPokemonName.value = pokemon
       loading.value = true
-      const pokemonWithMovesSortedByName =
-        await getPokemonWithMovesSortedByName(pokemon)
-      currentPokemon.value = pokemonWithMovesSortedByName
+      const formattedPokemon = await getFormattedPokemon(pokemon)
+      currentPokemon.value = formattedPokemon
       loading.value = false
     } else {
       pokemonSearchError.value = 'Could not find that pokemon'
@@ -29,18 +28,6 @@ const PokemonSearch = () => {
 
   return (
     <div class={style.search}>
-      <h1>Welcome to Fake Pokeyman Helper</h1>
-      <p>
-        Type in a name, hit submit, and get a table of moves that you can copy
-        into a Google Doc to get the format everyone likes.
-      </p>
-      <p>
-        Feel free to make feature requests on the{' '}
-        <a href='https://github.com/kinostl/pokeymanz-generator/issues'>
-          issues page
-        </a>{' '}
-        or Direct Message ZoneBooth (Trick Room) on the Pokeymanz server.
-      </p>
       <form onSubmitCapture={onSubmit}>
         <input
           list='pokemon'
@@ -59,7 +46,6 @@ const PokemonSearch = () => {
           <option value={entry}></option>
         ))}
       </datalist>
-      {loading.value ? <p>Loading a lot of data, please wait. ⏳</p> : ''}
     </div>
   )
 }
