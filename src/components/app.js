@@ -4,7 +4,12 @@ import AppState from '../appState'
 import { Pokedex } from 'pokeapi-js-wrapper'
 
 // Code-splitting is automated for `routes` directory
-import MoveSearch from './move-search'
+// We'll remember that when we add a new Header and more Search Bys
+
+import PokemonSearch from './PokemonSearch'
+import MovesList from './MovesList'
+import PokedexArea from './PokedexArea'
+
 const App = () => {
   const { listOfPokemonNames } = useContext(AppState)
   const P = new Pokedex()
@@ -16,7 +21,9 @@ const App = () => {
 
   return (
     <div id='app'>
-      <MoveSearch />
+      <PokemonSearch />
+      <PokedexArea />
+      <MovesList />
     </div>
   )
 }
