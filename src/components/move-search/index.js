@@ -26,7 +26,7 @@ const PokemonSearch = () => {
       currentPokemon.value = pokemonWithMovesSortedByName
       loading.value = false
     } else {
-      pokemonSearchError.value = <p>Could not find that pokemon</p>
+      pokemonSearchError.value = 'Could not find that pokemon'
     }
   }
 
@@ -55,7 +55,7 @@ const PokemonSearch = () => {
         />
         <input type='submit' value='Search by Pokemon' />
       </form>
-      {pokemonSearchError}
+      <p>{pokemonSearchError}</p>
 
       <datalist id='pokemon'>
         {listOfPokemonNames.value.map(entry => (
