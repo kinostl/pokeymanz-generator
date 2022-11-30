@@ -24,8 +24,3 @@ section {
 #egg {
   order: 2;
 }
-
-.move_type,
-.move_category {
-  text-transform: capitalize;
-}

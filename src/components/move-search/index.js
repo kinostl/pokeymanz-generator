@@ -4,6 +4,7 @@ import { signal } from '@preact/signals'
 import style from './style.css'
 import getMovesSortedByName from '../../lib/getMovesSortedByName'
 import { typeColors, categoryColors } from '../../lib/themeColors'
+import startCase from 'lodash/startCase'
 
 import { Pokedex } from 'pokeapi-js-wrapper'
 
@@ -104,7 +105,7 @@ const MoveSearch = () => {
                         };color:rgba(0,0,0,0.5)`}
                         class={style.move_type}
                       >
-                        {move.type.name}
+                        {startCase(move.type.name)}
                       </td>
                       <td
                         style={`background-color:${
@@ -112,7 +113,7 @@ const MoveSearch = () => {
                         };color:rgba(255,255,255,0.75)`}
                         class={style.move_category}
                       >
-                        {move.damage_class.name}
+                        {startCase(move.damage_class.name)}
                       </td>
                     </tr>
                   ))}
