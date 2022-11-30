@@ -25,11 +25,14 @@ const getMovesSortedByName = async res => {
     method[0],
     method[1].names.filter(getEnglish)[0].name,
     method[1].descriptions.filter(getEnglish)[0].description,
-    method[2].map(o => ({
-      ...o,
-      name: o.names.filter(getEnglish)[0].name,
-      effect: o.flavor_text_entries.filter(getEnglish).reverse()[0].flavor_text
-    }))
+    method[2]
+      .map(o => ({
+        ...o,
+        name: o.names.filter(getEnglish)[0].name,
+        effect: o.flavor_text_entries.filter(getEnglish).reverse()[0]
+          .flavor_text
+      }))
+      .sort((a, b) => a.name.toUpperCase().localeCompare(b.name.toUpperCase()))
   ])
 
   return sortedMovesByName
