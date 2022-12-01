@@ -21,7 +21,7 @@ const Home = () => {
   }, [])
 
   return (
-    <div>
+    <div class='home'>
       <h1>Welcome to Fake Pokeyman Helper</h1>
       <p>
         Type in a name, hit submit, and get a table of moves that you can copy
