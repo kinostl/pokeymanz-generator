@@ -6,7 +6,7 @@ import Home from '../routes/home'
 import baseroute from '../baseroute'
 
 const App = () => (
-  <div id='app' class='hack'>
+  <div id='app'>
     <Router>
       <Home path={`${baseroute}/`} />
     </Router>
