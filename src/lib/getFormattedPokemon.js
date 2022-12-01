@@ -61,6 +61,16 @@ const getSortedMoves = async pokemon => {
   return sortedMoveRes
 }
 
+const getFormattedAbilities = async pokemon => {
+  const AbilityUrls = pokemon.abilities.map(o => o.ability.url)
+  const Abilities = await P.resource(AbilityUrls)
+  const FormattedAbilities = Abilities.map(o => [
+    o.names.filter(getEnglish).reverse()[0].name,
+    o.flavor_text_entries.filter(getEnglish).reverse()[0].flavor_text
+  ])
+  return FormattedAbilities
+}
+
 const getFormattedSpecies = async pokemon => {
   const species = await P.resource(pokemon.species.url)
   const flavor_text_entries = species.flavor_text_entries
@@ -84,11 +94,13 @@ const getFormattedPokemon = async pokemonName => {
   const sortedMoves = await getSortedMoves(pokemon)
   const formattedMoves = getFormattedMoves(sortedMoves)
   const formattedSpecies = await getFormattedSpecies(pokemon)
+  const formattedAbilities = await getFormattedAbilities(pokemon)
 
   return {
     ...pokemon,
     moves: formattedMoves,
-    species: formattedSpecies
+    species: formattedSpecies,
+    abilities: formattedAbilities
   }
 }
 
