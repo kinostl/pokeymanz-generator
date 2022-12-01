@@ -26,7 +26,7 @@ const PokedexArea = ({ pokemon }) => {
         <td colSpan={3}>{startCase(pokemon.name)}</td>
       </tr>
       <tr>
-        <td colSpan={3}>Category</td>
+        <td colSpan={3}>{startCase(pokemon.species.genera)}</td>
       </tr>
       <tr>
         <td>Types</td>
@@ -64,10 +64,10 @@ const PokedexArea = ({ pokemon }) => {
         <td colSpan={2}>{`${weightInLb} lb (${weightInKg} kg)`}</td>
       </tr>
       <tr>
-        <td colSpan={3}>Red Description</td>
+        <td colSpan={3}>{pokemon.species.flavor_text[0]}</td>
       </tr>
       <tr>
-        <td colSpan={3}>Blue Description</td>
+        <td colSpan={3}>{pokemon.species.flavor_text[1]}</td>
       </tr>
     </table>
   )

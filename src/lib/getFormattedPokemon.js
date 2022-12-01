@@ -4,8 +4,8 @@ import mapValues from 'lodash/mapValues'
 import toPairs from 'lodash/toPairs'
 
 const P = new Pokedex()
+const getEnglish = o => o.language.name === 'en'
 const getFormattedMoves = moves => {
-  const getEnglish = o => o.language.name === 'en'
   const moveOrder = ['level-up', 'machine', 'egg']
 
   const formattedMoves = moves
@@ -63,19 +63,32 @@ const getSortedMoves = async pokemon => {
 
 const getFormattedSpecies = async pokemon => {
   const species = await P.resource(pokemon.species.url)
-  console.log(species)
+  const flavor_text_entries = species.flavor_text_entries
+    .filter(getEnglish)
+    .reverse()
+  const flavor_text = [
+    flavor_text_entries[0].flavor_text,
+    flavor_text_entries[1].flavor_text
+  ]
+  const genera_entries = species.genera.filter(getEnglish).reverse()
+  const genera = genera_entries[0].genus
+  return {
+    ...species,
+    flavor_text,
+    genera
+  }
 }
 
 const getFormattedPokemon = async pokemonName => {
   const pokemon = await P.getPokemonByName(pokemonName)
-  console.log(pokemon)
   const sortedMoves = await getSortedMoves(pokemon)
   const formattedMoves = getFormattedMoves(sortedMoves)
   const formattedSpecies = await getFormattedSpecies(pokemon)
 
   return {
     ...pokemon,
-    moves: formattedMoves
+    moves: formattedMoves,
+    species: formattedSpecies
   }
 }
 
