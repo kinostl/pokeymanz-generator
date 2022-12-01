@@ -2,10 +2,10 @@ import convert from 'convert'
 import { startCase } from 'lodash'
 import { h } from 'preact'
 import style from './style.css'
+import { typeColors } from '../../lib/themeColors'
 
 const PokedexArea = ({ pokemon }) => {
   if (!pokemon.sprites) return ''
-  console.log(pokemon)
   const heightInMeters = convert(pokemon.height, 'decimeters')
     .to('meters')
     .toFixed(1)
@@ -30,8 +30,28 @@ const PokedexArea = ({ pokemon }) => {
       </tr>
       <tr>
         <td>Types</td>
-        <td>First</td>
-        <td>Second</td>
+        {pokemon.types[0] ? (
+          <td
+            style={`background-color:${
+              typeColors[pokemon.types[0].type.name]
+            };color:rgba(0,0,0,0.5)`}
+          >
+            {startCase(pokemon.types[0].type.name)}
+          </td>
+        ) : (
+          <td></td>
+        )}
+        {pokemon.types[1] ? (
+          <td
+            style={`background-color:${
+              typeColors[pokemon.types[1].type.name]
+            };color:rgba(0,0,0,0.5)`}
+          >
+            {startCase(pokemon.types[1].type.name)}
+          </td>
+        ) : (
+          <td></td>
+        )}
       </tr>
       <tr>
         <td>Height</td>

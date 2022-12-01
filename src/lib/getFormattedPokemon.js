@@ -41,8 +41,8 @@ const getFormattedMoves = moves => {
 
   return formattedMoves
 }
-const getFormattedPokemon = async pokemonName => {
-  const pokemon = await P.getPokemonByName(pokemonName)
+
+const getSortedMoves = async pokemon => {
   const sortedMoves = groupBy(
     pokemon.moves,
     o =>
@@ -58,7 +58,20 @@ const getFormattedPokemon = async pokemonName => {
     await P.resource(pair[1])
   ])
   const sortedMoveRes = await Promise.all(sortedMovePromises)
-  const formattedMoves = getFormattedMoves(sortedMoveRes)
+  return sortedMoveRes
+}
+
+const getFormattedSpecies = async pokemon => {
+  const species = await P.resource(pokemon.species.url)
+  console.log(species)
+}
+
+const getFormattedPokemon = async pokemonName => {
+  const pokemon = await P.getPokemonByName(pokemonName)
+  console.log(pokemon)
+  const sortedMoves = await getSortedMoves(pokemon)
+  const formattedMoves = getFormattedMoves(sortedMoves)
+  const formattedSpecies = await getFormattedSpecies(pokemon)
 
   return {
     ...pokemon,
