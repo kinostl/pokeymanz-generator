@@ -1,4 +1,12 @@
-import './style';
-import App from './components/app';
+import './style'
+import AppComponent from './components/app'
+import { createContext } from 'preact'
+import AppState from './appState'
+import createAppState from './createAppState'
 
-export default App;
+const App = () => (
+  <AppState.Provider value={createAppState()}>
+    <AppComponent />
+  </AppState.Provider>
+)
+export default App
