@@ -3,11 +3,12 @@ import { Router } from 'preact-router'
 
 // Code-splitting is automated for `routes` directory
 import Home from '../routes/home'
+import baseroute from '../baseroute'
 
 const App = () => (
-  <div id='app'>
+  <div id='app' class='hack'>
     <Router>
-      <Home path='/' />
+      <Home path={`${baseroute}/`} />
     </Router>
   </div>
 )

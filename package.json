@@ -6,11 +6,12 @@
   "homepage": "https://kinostl.github.io/pokeymanz-generator",
   "scripts": {
     "build": "preact build",
+    "build:gh": "GITHUB_PAGES=pokeymanz-generator preact build",
     "serve": "sirv build --port 8080 --cors --single",
     "dev": "preact watch",
     "lint": "eslint src",
     "test": "jest",
-    "predeploy": "npm run build",
+    "predeploy": "npm run build:gh",
     "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
