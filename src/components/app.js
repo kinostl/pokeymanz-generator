@@ -7,6 +7,7 @@ import { Pokedex } from 'pokeapi-js-wrapper'
 // We'll remember that when we add a new Header and more Search Bys
 
 import PokemonSearch from './PokemonSearch'
+import AbilityList from './AbilityList'
 import MovesList from './MovesList'
 import PokedexArea from './PokedexArea'
 
@@ -40,6 +41,7 @@ const App = () => {
       ) : (
         <div>
           <PokedexArea pokemon={currentPokemon.value} />
+          <AbilityList pokemon={currentPokemon.value} />
           <MovesList pokemon={currentPokemon.value} />
         </div>
       )}
