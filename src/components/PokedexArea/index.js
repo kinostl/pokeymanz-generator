@@ -1,5 +1,5 @@
 import convert from 'convert'
-import { startCase } from 'lodash/startCase'
+import startCase from 'lodash/startCase'
 import { h } from 'preact'
 import style from './style.css'
 import { typeColors } from '../../lib/themeColors'
