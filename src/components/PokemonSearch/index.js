@@ -34,7 +34,7 @@ const PokemonSearch = () => {
           name='pokemon'
           value={currentPokemonInput}
           onInput={e => {
-            currentPokemonInput.value = e.target.value
+            currentPokemonInput.value = e.target.value.trim()
           }}
         />
         <input type='submit' value='Search by Pokemon' />
