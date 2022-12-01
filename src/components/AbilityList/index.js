@@ -1,6 +1,5 @@
 import { h } from 'preact'
 const AbilityList = ({ pokemon }) => {
-  console.log(pokemon)
   if (!pokemon.abilities) return ''
   return (
     <table>
