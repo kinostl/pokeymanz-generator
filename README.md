@@ -2,6 +2,8 @@
 
 Type in a name, hit submit, and get a table of moves that you can copy into a Google Doc to get the format everyone likes.
 
+You can use it here - https://kinostl.github.io/pokeymanz-generator/
+
 ## Contributing
 
 `git clone https://github.com/kinostl/pokeymanz-generator/` then `npm install` and then `npm run dev`. We're using preact for all of this.
