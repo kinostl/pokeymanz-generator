@@ -15,7 +15,7 @@ const PokemonSearch = () => {
   const onSubmit = async e => {
     e.preventDefault()
     pokemonSearchError.value = ''
-    const pokemon = currentPokemonInput.value.toLowerCase()
+    const pokemon = currentPokemonInput.peek().toLowerCase()
     if (listOfPokemonNames.value.includes(pokemon)) {
       currentPokemonName.value = pokemon
       loading.value = true
@@ -27,7 +27,9 @@ const PokemonSearch = () => {
     }
   }
 
-  /*
+  return (
+    <div class={style.search}>
+      <form onSubmitCapture={onSubmit}>
         <input
           list='pokemon'
           name='pokemon'
@@ -36,18 +38,9 @@ const PokemonSearch = () => {
             currentPokemonInput.value = e.target.value.trim()
           }}
         />
-        */
-  return (
-    <div class={style.search}>
-      <form onSubmitCapture={onSubmit}>
-        <select id='pokemon'>
-          {listOfPokemonNames.value.map(entry => (
-            <option value={entry}>{startCase(entry)}</option>
-          ))}
-        </select>
         <div style='display: flex;'>
           <label>Version</label>
-          <select style='width:100%' disabled={true}>
+          <select style='width:100%'>
             <option>Loading a lot of data</option>
             <option>Red/Blue</option>
             <option>Blue/Green</option>
@@ -57,6 +50,11 @@ const PokemonSearch = () => {
         <input type='submit' value='Search by Pokemon' />
       </form>
       <p>{pokemonSearchError}</p>
+      <datalist id='pokemon'>
+        {listOfPokemonNames.value.map(entry => (
+          <option value={startCase(entry)}>{startCase(entry)}</option>
+        ))}
+      </datalist>
     </div>
   )
 }
