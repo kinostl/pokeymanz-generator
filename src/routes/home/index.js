@@ -21,8 +21,12 @@ const Home = () => {
   }, [])
 
   return (
-    <div class={style.home}>
-      <h1>Welcome to Fake Pokeyman Helper</h1>
+    <div class='home'>
+      <h1>
+        <img src='./assets/pokeball.svg' style='max-width:25px;' />
+        Welcome to Fake Pokeyman Helper
+        <img src='./assets/pokeball.svg' style='max-width:25px;' />
+      </h1>
       <p>
         Type in a name, hit submit, and get a table of moves that you can copy
         into a Google Doc to get the format everyone likes.
@@ -35,7 +39,7 @@ const Home = () => {
         or Direct Message ZoneBooth (Trick Room) on the Pokeymanz server.
       </p>
       <p>Note - You need to resize images yourself.</p>
-      <PokemonSearch />
+      <PokemonSearch style='width:100%;' />
       {loading.value ? (
         <p>Loading a lot of data, please wait. ⏳</p>
       ) : (

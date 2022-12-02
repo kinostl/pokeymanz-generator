@@ -5,6 +5,7 @@ import { Router } from 'preact-router'
 import Home from '../routes/home'
 import baseroute from '../baseroute'
 
+//<Home path={`${baseroute}/pkmn/:name`} />
 const App = () => (
   <div id='app'>
     <Router>
