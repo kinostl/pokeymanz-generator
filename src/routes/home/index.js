@@ -10,6 +10,7 @@ import PokemonSearch from '../../components/PokemonSearch'
 import AbilityList from '../../components/AbilityList'
 import MovesList from '../../components/MovesList'
 import PokedexArea from '../../components/PokedexArea'
+import VersionSelector from '../../components/VersionSelector'
 
 const Home = () => {
   const { listOfPokemonNames, loading, currentPokemon } = useContext(AppState)
@@ -44,6 +45,7 @@ const Home = () => {
         <p>Loading a lot of data, please wait. ⏳</p>
       ) : (
         <div>
+          <VersionSelector pokemon={currentPokemon.value} />
           <PokedexArea pokemon={currentPokemon.value} />
           <AbilityList pokemon={currentPokemon.value} />
           <MovesList pokemon={currentPokemon.value} />

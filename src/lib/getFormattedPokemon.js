@@ -2,10 +2,12 @@ import { Pokedex } from 'pokeapi-js-wrapper'
 import groupBy from 'lodash/groupBy'
 import mapValues from 'lodash/mapValues'
 import toPairs from 'lodash/toPairs'
+import uniq from 'lodash/uniq'
 
 const P = new Pokedex()
 const getEnglish = o => o.language.name === 'en'
-const getFormattedMoves = moves => {
+const getFormattedMoves = async pokemon => {
+  const moves = await getSortedMoves(pokemon)
   const moveOrder = ['level-up', 'machine', 'egg']
 
   const formattedMoves = moves
@@ -89,18 +91,53 @@ const getFormattedSpecies = async pokemon => {
   }
 }
 
+const getFormattedVersionGroups = async pokemon => {
+  const game_indices = pokemon.game_indices.map(
+    game_indice => game_indice.version.url
+  )
+  const games = await P.resource(game_indices)
+  const version_groups = games.map(game => game.version_group.url)
+  const version_group_details = await P.resource(uniq(version_groups))
+  const formattedVgPromises = version_group_details.reverse().map(async vg => {
+    const version_name = vg.name
+    const versions_urls = vg.versions.map(version => version.url)
+    const generation_url = vg.generation.url
+    const [generation_res, versions_res] = await Promise.all([
+      P.resource(generation_url),
+      P.resource(versions_urls)
+    ])
+    const version_names = versions_res.map(
+      o => o.names.filter(getEnglish).reverse()[0].name
+    )
+    const generation_name = generation_res.names
+      .filter(getEnglish)
+      .reverse()[0].name
+    return [version_name, `${version_names.join('/')} (${generation_name})`]
+  })
+  const formatted_version_groups = await Promise.all(formattedVgPromises)
+  return formatted_version_groups
+}
+
 const getFormattedPokemon = async pokemonName => {
   const pokemon = await P.getPokemonByName(pokemonName)
-  const sortedMoves = await getSortedMoves(pokemon)
-  const formattedMoves = getFormattedMoves(sortedMoves)
-  const formattedSpecies = await getFormattedSpecies(pokemon)
-  const formattedAbilities = await getFormattedAbilities(pokemon)
+  const [
+    formattedMoves,
+    formattedSpecies,
+    formattedAbilities,
+    formattedVersionGroups
+  ] = await Promise.all([
+    getFormattedMoves(pokemon),
+    getFormattedSpecies(pokemon),
+    getFormattedAbilities(pokemon),
+    getFormattedVersionGroups(pokemon)
+  ])
 
   return {
     ...pokemon,
     moves: formattedMoves,
     species: formattedSpecies,
-    abilities: formattedAbilities
+    abilities: formattedAbilities,
+    version_groups: formattedVersionGroups
   }
 }
 
