@@ -6,4 +6,10 @@ def getFlavorText($lang):
     | map({(.version.name): .flavor_text})
 ;
 
-. | getFlavorText("en") | add
+def getEntries($lang):
+    {
+        id,
+        entries: (. | getFlavorText($lang) | add)
+    };
+
+. | getEntries("en")
