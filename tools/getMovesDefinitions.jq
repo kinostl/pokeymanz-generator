@@ -1,3 +1,4 @@
+
 def filterFlavorText($lang):
     .flavor_text_entries
     |map(select(.language.name == $lang))
@@ -10,12 +11,14 @@ def filterNames($lang):
     |map(.name)
 ;
 
-def getAbility($lang):
+def getMove($lang):
     {
         id,
+        category: .damage_class.name,
+        type: .type.name,
         effect: filterFlavorText($lang) | add,
         name: filterNames($lang)[0]
     }
 ;
 
-. | getAbility("en")
+. | getMove("en")

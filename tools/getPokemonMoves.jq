@@ -36,5 +36,6 @@ def getMoves:
         id, 
         moves: ([.moves[] | simplifyMoves] | sortByVersionAndMethod) #this will probably be pulled out by the glue code.
     }
+;
 
 . | getMoves
