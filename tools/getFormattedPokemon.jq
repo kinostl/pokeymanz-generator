@@ -1,39 +1,19 @@
-def simplifyMoves: 
-	{
-		move: .move.name, 
-		details: 
-			(.version_group_details[] 
-			| {version: .version_group.name, method: .move_learn_method.name})
-	}
-;
-
-def sortByVersionAndMethod:
-	.
-	| group_by(.details.version)
-	| map(
-		{ 
-			(.[0].details.version):
-				group_by(.details.method)
-				| map({(.[0].details.method): map(.move)})
-		}
-	)
-;
 
 def getFormattedPokemon:
 	{
+		# id and name are here because the glue code is going to be keying all these objects by id or name.
 		id, 
-		name,
 		details:{
 			id, 
 			name,
-			category,
+			category, # Need to pull this from Species and add it with the glue code
 			height,
 			weight,
 			types: [.types[].type.name], 
-			entries
+			# entries // Pull this from Species when the game changes
 		},
-		abilities: [.abilities[].ability.name],
-		moves: ([.moves[] | simplifyMoves] | sortByVersionAndMethod)
+		abilities: [.abilities[].ability.name]
+		# moves used to be here, but now they'll be pulled from Moves when the game changes
 	};
 
 . | getFormattedPokemon
