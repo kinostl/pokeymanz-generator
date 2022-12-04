@@ -1,5 +1,5 @@
 
-def getFormattedPokemon:
+def getPokemon:
 	{
 		# id and name are here because the glue code is going to be keying all these objects by id or name.
 		id, 
@@ -16,4 +16,4 @@ def getFormattedPokemon:
 		# moves used to be here, but now they'll be pulled from Moves when the game changes
 	};
 
-. | getFormattedPokemon
+. | getPokemon
