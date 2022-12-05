@@ -12,7 +12,7 @@ def filterNames($lang):
 
 def getAbility($lang):
     {
-        id,
+        id: .name,
         effect: filterFlavorText($lang) | add,
         name: filterNames($lang)[0]
     }

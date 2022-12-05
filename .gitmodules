@@ -1,0 +1,6 @@
+[submodule "build_deps/api-data"]
+	path = build_deps/api-data
+	url = https://github.com/PokeAPI/api-data
+[submodule "tools/deps/api-data"]
+	path = tools/deps/api-data
+	url = https://github.com/PokeAPI/api-data
