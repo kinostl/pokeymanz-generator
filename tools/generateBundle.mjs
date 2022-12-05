@@ -1,21 +1,41 @@
-#!/bin/bash
-
-// # eventually the json should be generated as a batch in here with the sprites and everything being put into assets as a bundle that can be loaded by localforge so that users can use the app offline and to prevent too much downloading.
 //# Issue https://github.com/kinostl/pokeymanz-generator/issues/18
 
 import util from 'node:util'
 import child_process from 'node:child_process'
 import fs from 'node:fs/promises'
+import convert from 'convert'
 
 const execFile = util.promisify(child_process.execFile)
 
 const POKEMON_DATA = './deps/api-data/data/api/v2/'
 const OUTPUT_FOLDER = '../src/assets/data/'
 
-let ability = {}
+const colorTable = {
+  physical: '#c92112',
+  special: '#4f5870',
+  status: '#8c888c',
+  normal: '#c6c6a7',
+  fighting: '#d67873',
+  flying: '#c6b7f5',
+  poison: '#c183c1',
+  ground: '#ebd69d',
+  rock: '#d1c17d',
+  bug: '#c6d16e',
+  ghost: '#a292bc',
+  steel: '#d1d1e0',
+  fire: '#f5ac78',
+  water: '#9db7f5',
+  grass: '#a7db8d',
+  electric: '#fae078',
+  psychic: '#fa92b2',
+  ice: '#bce6e6',
+  dragon: '#a27dfa',
+  dark: '#a29288',
+  fairy: '#f4bdc9'
+}
 
-async function getAbility () {
-  const files = await fs.readdir(`${POKEMON_DATA}/ability/`, {
+async function getDefinition (definition) {
+  const files = await fs.readdir(`${POKEMON_DATA}/${definition}/`, {
     withFileTypes: true
   })
 
@@ -24,14 +44,160 @@ async function getAbility () {
     .map(async file => {
       const { stdout } = await execFile('jq', [
         '-f',
-        'getAbilityDefinitions.jq',
-        `${POKEMON_DATA}/ability/${file.name}/index.json`
+        `get-${definition}-definitions.jq`,
+        `${POKEMON_DATA}/${definition}/${file.name}/index.json`
       ])
       const _json = JSON.parse(stdout)
       return _json
     })
   const jqRes = await Promise.all(jqPromises)
-  fs.writeFile(`${OUTPUT_FOLDER}/ability.json`, JSON.stringify(jqRes))
+  return jqRes
 }
 
-await Promise.all([getAbility()])
+async function getPokemonDetails (detail) {
+  const files = await fs.readdir(`${POKEMON_DATA}/pokemon-species/`, {
+    withFileTypes: true
+  })
+
+  const jqPromises = files
+    .filter(file => file.isDirectory())
+    .map(async file => {
+      const { stdout } = await execFile('jq', [
+        '-f',
+        `get-pokemon-${detail}.jq`,
+        `${POKEMON_DATA}/pokemon-species/${file.name}/index.json`
+      ])
+      const _json = JSON.parse(stdout)
+      return _json
+    })
+  const jqRes = await Promise.all(jqPromises)
+  return jqRes
+}
+
+async function getPokemonCanvas () {
+  const files = await fs.readdir(`${POKEMON_DATA}/pokemon/`, {
+    withFileTypes: true
+  })
+
+  const jqPromises = files
+    .filter(file => file.isDirectory())
+    .map(async file => {
+      const { stdout } = await execFile('jq', [
+        '-f',
+        `get-pokemon.jq`,
+        `${POKEMON_DATA}/pokemon/${file.name}/index.json`
+      ])
+      const _json = JSON.parse(stdout)
+      return _json
+    })
+  const jqRes = await Promise.all(jqPromises)
+  return jqRes
+}
+
+async function getPokemonMoves () {
+  const files = await fs.readdir(`${POKEMON_DATA}/pokemon/`, {
+    withFileTypes: true
+  })
+
+  const jqPromises = files
+    .filter(file => file.isDirectory())
+    .map(async file => {
+      const { stdout } = await execFile('jq', [
+        '-f',
+        `get-pokemon-move.jq`,
+        `${POKEMON_DATA}/pokemon/${file.name}/index.json`
+      ])
+      const _json = JSON.parse(stdout)
+      return _json
+    })
+  const jqRes = await Promise.all(jqPromises)
+  return jqRes
+}
+
+function defineColors (data) {
+  data.forEach(datum => {
+    datum.color = colorTable[datum.id]
+  })
+  return data
+}
+
+function definePokemon (pokemons, categories) {
+  pokemons.forEach(pokemon => {
+    pokemon.details.category = categories[pokemon.id]
+
+    const heightInMeters = convert(pokemon.details.height, 'decimeters')
+      .to('meters')
+      .toFixed(1)
+    const heightInInches = convert(pokemon.details.height, 'decimeters')
+      .to('inches')
+      .toFixed(0)
+    const heightInFeet = Math.floor(heightInInches / 12)
+    const andInches = heightInInches - heightInFeet * 12
+    const weightInLb = convert(pokemon.details.weight, 'hectograms')
+      .to('lb')
+      .toFixed(1)
+    const weightInKg = convert(pokemon.details.weight, 'hectograms')
+      .to('kg')
+      .toFixed(1)
+    pokemon.details.height = {
+      meters: heightInMeters,
+      feet: heightInFeet,
+      andInches: andInches
+    }
+    pokemon.details.weight = {
+      lb: weightInLb,
+      kg: weightInKg
+    }
+  })
+  return pokemons
+}
+
+const [
+  ability,
+  category_canvas,
+  move,
+  type_canvas,
+  pokemon_canvas,
+  pokemon_move,
+  pokemon_category_canvas,
+  pokemon_entry,
+  pokemon_name
+] = await Promise.all([
+  getDefinition('ability'),
+  getDefinition('move-damage-class'),
+  getDefinition('move'),
+  getDefinition('type'),
+  getPokemonCanvas(),
+  getPokemonMoves(),
+  getPokemonDetails('category'),
+  getPokemonDetails('entry'),
+  getPokemonDetails('name')
+])
+
+const category = defineColors(category_canvas)
+const type = defineColors(type_canvas)
+const pokemon_category = pokemon_category_canvas.reduce(
+  (obj, item) => ((obj[item.id] = item.category), obj),
+  {}
+)
+const pokemon = definePokemon(pokemon_canvas, pokemon_category)
+
+await Promise.all([
+  fs.writeFile(`${OUTPUT_FOLDER}/ability.json`, JSON.stringify(ability)),
+  fs.writeFile(`${OUTPUT_FOLDER}/category.json`, JSON.stringify(category)),
+  fs.writeFile(`${OUTPUT_FOLDER}/type.json`, JSON.stringify(type)),
+  fs.writeFile(`${OUTPUT_FOLDER}/move.json`, JSON.stringify(move)),
+  fs.writeFile(`${OUTPUT_FOLDER}/pokemon/index.json`, JSON.stringify(pokemon)),
+  fs.writeFile(
+    `${OUTPUT_FOLDER}/pokemon/move.json`,
+    JSON.stringify(pokemon_move)
+  ),
+  fs.writeFile(
+    `${OUTPUT_FOLDER}/pokemon/entry.json`,
+    JSON.stringify(pokemon_entry)
+  ),
+  fs.writeFile(
+    `${OUTPUT_FOLDER}/pokemon/name.json`,
+    JSON.stringify(pokemon_name)
+  )
+])
