@@ -204,31 +204,20 @@ const pokemon_category = pokemon_category_canvas.reduce(
 const pokemon = definePokemon(pokemon_canvas, pokemon_category)
 const pokemon_version = definePokemonVersion(pokemon_move)
 
-await Promise.all([
-  fs.writeFile(`${OUTPUT_FOLDER}/ability.json`, JSON.stringify(ability)),
-  fs.writeFile(`${OUTPUT_FOLDER}/category.json`, JSON.stringify(category)),
-  fs.writeFile(`${OUTPUT_FOLDER}/type.json`, JSON.stringify(type)),
-  fs.writeFile(`${OUTPUT_FOLDER}/move.json`, JSON.stringify(move)),
-  fs.writeFile(`${OUTPUT_FOLDER}/version.json`, JSON.stringify(version)),
-  fs.writeFile(
-    `${OUTPUT_FOLDER}/version_group.json`,
-    JSON.stringify(version_group)
-  ),
-  fs.writeFile(`${OUTPUT_FOLDER}/pokemon/index.json`, JSON.stringify(pokemon)),
-  fs.writeFile(
-    `${OUTPUT_FOLDER}/pokemon/move.json`,
-    JSON.stringify(pokemon_move)
-  ),
-  fs.writeFile(
-    `${OUTPUT_FOLDER}/pokemon/entry.json`,
-    JSON.stringify(pokemon_entry)
-  ),
-  fs.writeFile(
-    `${OUTPUT_FOLDER}/pokemon/name.json`,
-    JSON.stringify(pokemon_name)
-  ),
-  fs.writeFile(
-    `${OUTPUT_FOLDER}/pokemon/version.json`,
-    JSON.stringify(pokemon_version)
-  )
-])
+const writePromises = Object.entries({
+  ability,
+  category,
+  type,
+  move,
+  version,
+  version_group,
+  pokemon,
+  pokemon_move,
+  pokemon_entry,
+  pokemon_name,
+  pokemon_version
+}).map(([key, value]) =>
+  fs.writeFile(`${OUTPUT_FOLDER}/${key}.json`, JSON.stringify(value))
+)
+
+await Promise.all(writePromises)

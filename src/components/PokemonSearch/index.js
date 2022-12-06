@@ -19,7 +19,7 @@ const PokemonSearch = () => {
     const ids = []
     const _nameIdMap = {}
     _loading.value = true
-    await stores.value.pokemon_names.iterate(({ id, name, order }) => {
+    await stores.value.pokemon_name.iterate(({ id, name, order }) => {
       names[order] = <option value={name} />
       ids[order] = id
       _nameIdMap[name] = id
@@ -28,7 +28,7 @@ const PokemonSearch = () => {
     listOfPokemonIds.value = ids
     nameIdMap.value = _nameIdMap
     _loading.value = false
-  }, [stores.value.pokemon_names])
+  }, [stores.value.pokemon_name])
 
   const onSubmit = async e => {
     e.preventDefault()

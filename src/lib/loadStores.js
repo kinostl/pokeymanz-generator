@@ -11,65 +11,33 @@ const objectForEach = async (obj, fn) =>
     Object.entries(obj).map(async ([k, v], i) => [k, await fn(v, k, i)])
   )
 
-async function downloadDatas () {
-  const [
-    pokemons,
-    pokemon_entries,
-    pokemon_moves,
-    pokemon_names,
-    pokemon_versions,
-    abilities,
-    categories,
-    moves,
-    types,
-    versions,
-    version_groups
-  ] = await Promise.all([
-    fetch(`./assets/data/pokemon/index.json`),
-    fetch(`./assets/data/pokemon/entry.json`),
-    fetch(`./assets/data/pokemon/move.json`),
-    fetch(`./assets/data/pokemon/name.json`),
-    fetch(`./assets/data/pokemon/version.json`),
-    fetch(`./assets/data/ability.json`),
-    fetch(`./assets/data/category.json`),
-    fetch(`./assets/data/move.json`),
-    fetch(`./assets/data/type.json`),
-    fetch(`./assets/data/version.json`),
-    fetch(`./assets/data/version_group.json`)
-  ])
+const objectFilterKeys = async (obj, fn) => {
+  const res = await Promise.all(
+    Object.entries(obj).map(async ([k, v], i) => [k, await fn(v, k, i)])
+  )
+  return res.filter(([k, v]) => v === true).map(([k, v]) => k)
+}
 
-  const req = {
-    pokemons,
-    pokemon_entries,
-    pokemon_moves,
-    pokemon_names,
-    pokemon_versions,
-    abilities,
-    categories,
-    moves,
-    types,
-    versions,
-    version_groups
-  }
-
-  return await objectMap(req, async o => await o.json())
+async function downloadData (data) {
+  const res = await fetch(`./assets/data/${data}.json`)
+  return await res.json()
 }
 
 async function createStores () {
   return Object.fromEntries(
     await Promise.all(
       [
-        'pokemons',
-        'pokemon_entries',
-        'pokemon_moves',
-        'pokemon_names',
-        'pokemon_versions',
-        'abilities',
-        'categories',
-        'moves',
-        'types',
-        'versions',
-        'version_groups'
+        'pokemon',
+        'pokemon_entry',
+        'pokemon_move',
+        'pokemon_name',
+        'pokemon_version',
+        'ability',
+        'category',
+        'move',
+        'type',
+        'version',
+        'version_group'
       ].map(async storeName => [
         storeName,
         await localforage.createInstance({
@@ -81,14 +49,8 @@ async function createStores () {
   )
 }
 
-async function populateStores (datas, stores) {
-  await objectForEach(datas, async (rows, table) => {
-    await Promise.all(
-      rows.map(async row => {
-        await stores[table].setItem(`${row.id}`, row)
-      })
-    )
-  })
+async function populateStore (data, store) {
+  return Promise.allSettled(data.map(row => store.setItem(`${row.id}`, row)))
 }
 
 async function loadStores () {
@@ -96,15 +58,24 @@ async function loadStores () {
   //TODO give the user an option to download the bundle again for whatever reason.
 
   const stores = await createStores()
-  const emptyStores = []
-  await objectForEach(stores, async (store, name) => {
+  const emptyStores = await objectFilterKeys(stores, async (store, name) => {
     const length = await store.length()
-    if (length === 0) emptyStores.push(name)
+    return length === 0
   })
   if (emptyStores.length > 0) {
-    const datas = await downloadDatas()
-    await populateStores(datas, stores)
+    await Promise.allSettled(
+      emptyStores
+        .map(emptyStore => ({
+          key: emptyStore,
+          store: stores[emptyStore]
+        }))
+        .map(async ({ key, store }) => {
+          const data = await downloadData(key)
+          await populateStore(data, store)
+        })
+    )
   }
+
   return stores
 }
 
