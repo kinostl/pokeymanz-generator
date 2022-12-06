@@ -35,13 +35,13 @@ const Home = () => {
       </p>
       <p>Note - You need to resize images yourself.</p>
       <PokemonSearch style='width:100%;' />
-      {/*
       <div>
         <VersionSelector pokemon={currentPokemon.value} />
+      </div>
+      {/*
         <PokedexArea pokemon={currentPokemon.value} />
         <AbilityList pokemon={currentPokemon.value} />
         <MovesList pokemon={currentPokemon.value} />
-      </div>
   */}
     </div>
   )

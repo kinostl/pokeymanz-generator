@@ -22,7 +22,7 @@ const PokemonSearch = () => {
     await stores.value.pokemon_name.iterate(({ id, name, order }) => {
       names[order] = <option value={name} />
       ids[order] = id
-      _nameIdMap[name] = id
+      _nameIdMap[name.toLowerCase()] = id
     })
     listOfPokemonNames.value = names
     listOfPokemonIds.value = ids
@@ -33,21 +33,13 @@ const PokemonSearch = () => {
   const onSubmit = async e => {
     e.preventDefault()
     pokemonSearchError.value = ''
-    const pokemon = nameIdMap.value[currentPokemonInput.value]
+    const pokemon = nameIdMap.value[currentPokemonInput.value.toLowerCase()]
     if (
-      listOfPokemonIds.value.includes(pokemon) &&
-      currentPokemon.value.id !== pokemon
+      listOfPokemonIds.value.includes(pokemon) //&&
     ) {
-      loading.value = true
       currentPokemon.value = {
         id: pokemon
       }
-      //load details
-      //load abilities
-      //load moves
-      //load picture
-      //return object
-      loading.value = false
     } else {
       pokemonSearchError.value = 'Could not find that pokemon'
     }

@@ -169,6 +169,15 @@ function definePokemonVersion (pokemon_moves) {
   }))
 }
 
+function defineVersionNames (versions, version_groups) {
+  return version_groups.map(version_group => ({
+    id: version_group.id,
+    name: version_group.versions
+      .map(version => versions.find(o => o.id === version).name)
+      .join(' / ')
+  }))
+}
+
 const [
   ability,
   category_canvas,
@@ -203,6 +212,7 @@ const pokemon_category = pokemon_category_canvas.reduce(
 )
 const pokemon = definePokemon(pokemon_canvas, pokemon_category)
 const pokemon_version = definePokemonVersion(pokemon_move)
+const version_group_name = defineVersionNames(version, version_group)
 
 const writePromises = Object.entries({
   ability,
@@ -211,6 +221,7 @@ const writePromises = Object.entries({
   move,
   version,
   version_group,
+  version_group_name,
   pokemon,
   pokemon_move,
   pokemon_entry,

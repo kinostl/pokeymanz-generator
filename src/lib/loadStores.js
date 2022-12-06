@@ -37,7 +37,8 @@ async function createStores () {
         'move',
         'type',
         'version',
-        'version_group'
+        'version_group',
+        'version_group_name'
       ].map(async storeName => [
         storeName,
         await localforage.createInstance({
