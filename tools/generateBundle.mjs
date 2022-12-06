@@ -4,11 +4,15 @@ import util from 'node:util'
 import child_process from 'node:child_process'
 import fs from 'node:fs/promises'
 import convert from 'convert'
+import { dirname } from 'path'
+import { fileURLToPath } from 'url'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
 
 const execFile = util.promisify(child_process.execFile)
 
-const POKEMON_DATA = './deps/api-data/data/api/v2/'
-const OUTPUT_FOLDER = '../src/assets/data/'
+const POKEMON_DATA = `${__dirname}/./deps/api-data/data/api/v2/`
+const OUTPUT_FOLDER = `${__dirname}/../src/assets/data/`
 
 const colorTable = {
   physical: '#c92112',
@@ -44,7 +48,7 @@ async function getDefinition (definition) {
     .map(async file => {
       const { stdout } = await execFile('jq', [
         '-f',
-        `get-${definition}-definitions.jq`,
+        `${__dirname}/get-${definition}-definitions.jq`,
         `${POKEMON_DATA}/${definition}/${file.name}/index.json`
       ])
       const _json = JSON.parse(stdout)
@@ -64,7 +68,7 @@ async function getPokemonDetails (detail) {
     .map(async file => {
       const { stdout } = await execFile('jq', [
         '-f',
-        `get-pokemon-${detail}.jq`,
+        `${__dirname}/get-pokemon-${detail}.jq`,
         `${POKEMON_DATA}/pokemon-species/${file.name}/index.json`
       ])
       const _json = JSON.parse(stdout)
@@ -72,6 +76,11 @@ async function getPokemonDetails (detail) {
     })
   const jqRes = await Promise.all(jqPromises)
   return jqRes
+}
+
+async function getPokemonNames () {
+  const names = await getPokemonDetails('name')
+  return names.sort((a, b) => a.order - b.order)
 }
 
 async function getPokemonCanvas () {
@@ -84,7 +93,7 @@ async function getPokemonCanvas () {
     .map(async file => {
       const { stdout } = await execFile('jq', [
         '-f',
-        `get-pokemon.jq`,
+        `${__dirname}/get-pokemon.jq`,
         `${POKEMON_DATA}/pokemon/${file.name}/index.json`
       ])
       const _json = JSON.parse(stdout)
@@ -104,7 +113,7 @@ async function getPokemonMoves () {
     .map(async file => {
       const { stdout } = await execFile('jq', [
         '-f',
-        `get-pokemon-move.jq`,
+        `${__dirname}/get-pokemon-move.jq`,
         `${POKEMON_DATA}/pokemon/${file.name}/index.json`
       ])
       const _json = JSON.parse(stdout)
@@ -152,11 +161,21 @@ function definePokemon (pokemons, categories) {
   return pokemons
 }
 
+function definePokemonVersion (pokemon_moves) {
+  //We define it by the moves because its the only thing reliable for this.
+  return pokemon_moves.map(pokemon => ({
+    id: pokemon.id,
+    versions: Object.keys(pokemon.moves)
+  }))
+}
+
 const [
   ability,
   category_canvas,
   move,
   type_canvas,
+  version,
+  version_group,
   pokemon_canvas,
   pokemon_move,
   pokemon_category_canvas,
@@ -167,11 +186,13 @@ const [
   getDefinition('move-damage-class'),
   getDefinition('move'),
   getDefinition('type'),
+  getDefinition('version'),
+  getDefinition('version-group'),
   getPokemonCanvas(),
   getPokemonMoves(),
   getPokemonDetails('category'),
   getPokemonDetails('entry'),
-  getPokemonDetails('name')
+  getPokemonNames()
 ])
 
 const category = defineColors(category_canvas)
@@ -181,12 +202,18 @@ const pokemon_category = pokemon_category_canvas.reduce(
   {}
 )
 const pokemon = definePokemon(pokemon_canvas, pokemon_category)
+const pokemon_version = definePokemonVersion(pokemon_move)
 
 await Promise.all([
   fs.writeFile(`${OUTPUT_FOLDER}/ability.json`, JSON.stringify(ability)),
   fs.writeFile(`${OUTPUT_FOLDER}/category.json`, JSON.stringify(category)),
   fs.writeFile(`${OUTPUT_FOLDER}/type.json`, JSON.stringify(type)),
   fs.writeFile(`${OUTPUT_FOLDER}/move.json`, JSON.stringify(move)),
+  fs.writeFile(`${OUTPUT_FOLDER}/version.json`, JSON.stringify(version)),
+  fs.writeFile(
+    `${OUTPUT_FOLDER}/version_group.json`,
+    JSON.stringify(version_group)
+  ),
   fs.writeFile(`${OUTPUT_FOLDER}/pokemon/index.json`, JSON.stringify(pokemon)),
   fs.writeFile(
     `${OUTPUT_FOLDER}/pokemon/move.json`,
@@ -199,5 +226,9 @@ await Promise.all([
   fs.writeFile(
     `${OUTPUT_FOLDER}/pokemon/name.json`,
     JSON.stringify(pokemon_name)
+  ),
+  fs.writeFile(
+    `${OUTPUT_FOLDER}/pokemon/version.json`,
+    JSON.stringify(pokemon_version)
   )
 ])

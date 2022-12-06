@@ -10,15 +10,10 @@ import AbilityList from '../../components/AbilityList'
 import MovesList from '../../components/MovesList'
 import PokedexArea from '../../components/PokedexArea'
 import VersionSelector from '../../components/VersionSelector'
+import localforage from 'localforage'
 
 const Home = () => {
-  const { listOfPokemonNames, loading, currentPokemon } = useContext(AppState)
-  const P = new Pokedex()
-  useEffect(async () => {
-    const res = await P.resource('api/v2/pokedex/1/')
-    const names = res.pokemon_entries.map(entry => entry.pokemon_species.name)
-    listOfPokemonNames.value = names
-  }, [])
+  const { loading, currentPokemon } = useContext(AppState)
 
   return (
     <div class='home'>
@@ -40,16 +35,14 @@ const Home = () => {
       </p>
       <p>Note - You need to resize images yourself.</p>
       <PokemonSearch style='width:100%;' />
-      {loading.value ? (
-        <p>Loading a lot of data, please wait. ⏳</p>
-      ) : (
-        <div>
-          <VersionSelector pokemon={currentPokemon.value} />
-          <PokedexArea pokemon={currentPokemon.value} />
-          <AbilityList pokemon={currentPokemon.value} />
-          <MovesList pokemon={currentPokemon.value} />
-        </div>
-      )}
+      {/*
+      <div>
+        <VersionSelector pokemon={currentPokemon.value} />
+        <PokedexArea pokemon={currentPokemon.value} />
+        <AbilityList pokemon={currentPokemon.value} />
+        <MovesList pokemon={currentPokemon.value} />
+      </div>
+  */}
     </div>
   )
 }

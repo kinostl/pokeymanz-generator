@@ -7,6 +7,7 @@ def pluckName($lang):
 def getName($lang):
     {
         id: .name,
+        order:.id,
         name: pluckName($lang)
     }
 ;

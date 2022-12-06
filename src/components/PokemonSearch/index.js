@@ -1,31 +1,60 @@
 import { h } from 'preact'
-import { useContext } from 'preact/hooks'
+import { useEffect, useContext } from 'preact/hooks'
 import { useSignal } from '@preact/signals'
 import style from './style.css'
-import getFormattedPokemon from '../../lib/getPokemon'
 import AppState from '../../appState'
 
 const PokemonSearch = () => {
   const pokemonSearchError = useSignal('')
   const currentPokemonInput = useSignal('')
-  const { loading, listOfPokemonNames, currentPokemon, currentPokemonName } =
-    useContext(AppState)
+  const listOfPokemonNames = useSignal([])
+  const listOfPokemonIds = useSignal([])
+  const nameIdMap = useSignal({})
+  const _loading = useSignal(false)
+
+  const { loading, stores, currentPokemon } = useContext(AppState)
+
+  useEffect(async () => {
+    const names = []
+    const ids = []
+    const _nameIdMap = {}
+    _loading.value = true
+    await stores.value.pokemon_names.iterate(({ id, name, order }) => {
+      names[order] = <option value={name} />
+      ids[order] = id
+      _nameIdMap[name] = id
+    })
+    listOfPokemonNames.value = names
+    listOfPokemonIds.value = ids
+    nameIdMap.value = _nameIdMap
+    _loading.value = false
+  }, [stores.value.pokemon_names])
 
   const onSubmit = async e => {
     e.preventDefault()
     pokemonSearchError.value = ''
-    const pokemon = currentPokemonInput.peek().toLowerCase()
-    if (listOfPokemonNames.value.includes(pokemon)) {
-      currentPokemonName.value = pokemon
+    const pokemon = nameIdMap.value[currentPokemonInput.value]
+    if (
+      listOfPokemonIds.value.includes(pokemon) &&
+      currentPokemon.value.id !== pokemon
+    ) {
       loading.value = true
-      const formattedPokemon = await getFormattedPokemon(pokemon)
-      currentPokemon.value = formattedPokemon
+      currentPokemon.value = {
+        id: pokemon
+      }
+      //load details
+      //load abilities
+      //load moves
+      //load picture
+      //return object
       loading.value = false
     } else {
       pokemonSearchError.value = 'Could not find that pokemon'
     }
   }
 
+  if (loading.value.stores) return <p>Loading data bundle.</p>
+  if (_loading.value) return <p>Loading pokemon names.</p>
   return (
     <div class={style.search}>
       <form onSubmitCapture={onSubmit}>
@@ -40,11 +69,7 @@ const PokemonSearch = () => {
         <input type='submit' value='Search by Pokemon' />
       </form>
       <p>{pokemonSearchError}</p>
-      <datalist id='pokemon'>
-        {listOfPokemonNames.value.map(entry => (
-          <option value={startCase(entry)}>{startCase(entry)}</option>
-        ))}
-      </datalist>
+      <datalist id='pokemon'>{listOfPokemonNames.value}</datalist>
     </div>
   )
 }

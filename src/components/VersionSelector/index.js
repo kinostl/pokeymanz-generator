@@ -1,11 +1,20 @@
 import { h } from 'preact'
-import { useContext } from 'preact/hooks'
+import { useContext, useEffect } from 'preact/hooks'
 import AppState from '../../appState'
 
 const VersionSelector = ({ pokemon }) => {
-  if (!pokemon.version_groups) return '' //should actually check for versions
-  const { currentVersion } = useContext(AppState)
-  console.log(currentVersion.peek())
+  const { stores, currentPokemon } = useContext(AppState)
+  if (!currentPokemon.value) return ''
+  const currentVersion = useSignal('')
+  useEffect(async () => {
+    if (!currentPokemon.value.version) {
+      const pokemon_versions = await stores.pokemon_versions.getItem(
+        currentPokemon
+      )
+      currentPokemon.value.version = pokemon_versions[0]
+      currentVersion.value = pokemon_versions[0]
+    }
+  }, [currentPokemon])
   const onChange = e => {
     currentVersion.value = e.target.value
     console.log(currentVersion.peek())
