@@ -13,6 +13,7 @@ const objectForEach = async (obj, fn) =>
 
 async function loadPokemon () {
   //TODO make this conditional based on a version number or something.
+  //TODO give the user an option to download the bundle again for whatever reason.
   await localforage.clear()
   const [
     pokemons,
