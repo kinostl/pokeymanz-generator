@@ -1,7 +1,5 @@
 import { h } from 'preact'
 import style from './style.css'
-import { typeColors, categoryColors } from '../../lib/themeColors'
-import startCase from 'lodash/startCase'
 
 const MovesList = ({ pokemon }) => {
   if (!pokemon.moves) return ''

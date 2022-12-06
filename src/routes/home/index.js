@@ -1,7 +1,6 @@
 import { h } from 'preact'
 import { useContext, useEffect } from 'preact/hooks'
 import AppState from '../../appState'
-import { Pokedex } from 'pokeapi-js-wrapper'
 import style from './style.css'
 // Code-splitting is automated for `routes` directory
 // We'll remember that when we add a new Header and more Search Bys

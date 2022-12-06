@@ -1,21 +1,15 @@
 import { h } from 'preact'
 import { useContext } from 'preact/hooks'
 import { useSignal } from '@preact/signals'
-import startCase from 'lodash/startCase'
 import style from './style.css'
-import getFormattedPokemon from '../../lib/getFormattedPokemon'
+import getFormattedPokemon from '../../lib/getPokemon'
 import AppState from '../../appState'
 
 const PokemonSearch = () => {
   const pokemonSearchError = useSignal('')
   const currentPokemonInput = useSignal('')
-  const {
-    loading,
-    listOfPokemonNames,
-    currentPokemon,
-    currentPokemonName,
-    currentVersion
-  } = useContext(AppState)
+  const { loading, listOfPokemonNames, currentPokemon, currentPokemonName } =
+    useContext(AppState)
 
   const onSubmit = async e => {
     e.preventDefault()
@@ -26,7 +20,6 @@ const PokemonSearch = () => {
       loading.value = true
       const formattedPokemon = await getFormattedPokemon(pokemon)
       currentPokemon.value = formattedPokemon
-      currentVersion.value = formattedPokemon.version_groups[0][0]
       loading.value = false
     } else {
       pokemonSearchError.value = 'Could not find that pokemon'
