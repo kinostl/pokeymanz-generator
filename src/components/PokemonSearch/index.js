@@ -34,9 +34,7 @@ const PokemonSearch = () => {
     e.preventDefault()
     pokemonSearchError.value = ''
     const pokemon = nameIdMap.value[currentPokemonInput.value.toLowerCase()]
-    if (
-      listOfPokemonIds.value.includes(pokemon) //&&
-    ) {
+    if (pokemon && listOfPokemonIds.value.includes(pokemon)) {
       currentPokemon.value = {
         id: pokemon
       }

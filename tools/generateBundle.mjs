@@ -151,7 +151,7 @@ function definePokemon (pokemons, categories) {
     pokemon.details.height = {
       meters: heightInMeters,
       feet: heightInFeet,
-      andInches: andInches
+      andInches: andInches < 10 ? `0${andInches}` : andInches
     }
     pokemon.details.weight = {
       lb: weightInLb,
@@ -169,12 +169,14 @@ function definePokemonVersion (pokemon_moves) {
   }))
 }
 
-function defineVersionNames (versions, version_groups) {
+function defineVersionGroup (versions, version_groups) {
   return version_groups.map(version_group => ({
     id: version_group.id,
+    order: version_group.order,
     name: version_group.versions
       .map(version => versions.find(o => o.id === version).name)
-      .join(' / ')
+      .join(' / '),
+    versions: version_group.versions
   }))
 }
 
@@ -184,7 +186,7 @@ const [
   move,
   type_canvas,
   version,
-  version_group,
+  version_group_canvas,
   pokemon_canvas,
   pokemon_move,
   pokemon_category_canvas,
@@ -212,7 +214,7 @@ const pokemon_category = pokemon_category_canvas.reduce(
 )
 const pokemon = definePokemon(pokemon_canvas, pokemon_category)
 const pokemon_version = definePokemonVersion(pokemon_move)
-const version_group_name = defineVersionNames(version, version_group)
+const version_group = defineVersionGroup(version, version_group_canvas)
 
 const writePromises = Object.entries({
   ability,
@@ -221,7 +223,6 @@ const writePromises = Object.entries({
   move,
   version,
   version_group,
-  version_group_name,
   pokemon,
   pokemon_move,
   pokemon_entry,

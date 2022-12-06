@@ -1,6 +1,4 @@
 import { h } from 'preact'
-import { useContext, useEffect } from 'preact/hooks'
-import AppState from '../../appState'
 import style from './style.css'
 // Code-splitting is automated for `routes` directory
 // We'll remember that when we add a new Header and more Search Bys
@@ -10,11 +8,8 @@ import AbilityList from '../../components/AbilityList'
 import MovesList from '../../components/MovesList'
 import PokedexArea from '../../components/PokedexArea'
 import VersionSelector from '../../components/VersionSelector'
-import localforage from 'localforage'
 
 const Home = () => {
-  const { loading, currentPokemon } = useContext(AppState)
-
   return (
     <div class='home'>
       <h1>
@@ -36,10 +31,10 @@ const Home = () => {
       <p>Note - You need to resize images yourself.</p>
       <PokemonSearch style='width:100%;' />
       <div>
-        <VersionSelector pokemon={currentPokemon.value} />
+        <VersionSelector />
       </div>
+      <PokedexArea />
       {/*
-        <PokedexArea pokemon={currentPokemon.value} />
         <AbilityList pokemon={currentPokemon.value} />
         <MovesList pokemon={currentPokemon.value} />
   */}

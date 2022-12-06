@@ -17,6 +17,7 @@ const App = () => {
     loading.value.stores = false
   }, [])
 
+  if (!stores.value) return 'Loading a lot of data.'
   return (
     <div id='app'>
       <Router>
