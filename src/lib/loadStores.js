@@ -35,6 +35,7 @@ async function createStores () {
         'ability',
         'category',
         'move',
+        'move_learn_method',
         'type',
         'version',
         'version_group'

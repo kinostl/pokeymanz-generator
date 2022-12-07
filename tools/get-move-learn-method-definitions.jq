@@ -14,7 +14,7 @@ def getMoveLearnMethod($lang):
     {
         id: .name,
         name: filterNames($lang)[0],
-        descriptions: filterDescriptions($lang)[0]
+        description: filterDescriptions($lang)[0]
     }
 ;
 

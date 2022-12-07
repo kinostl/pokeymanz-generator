@@ -1,32 +1,34 @@
 import { useSignal } from '@preact/signals'
 import { h } from 'preact'
-import { useEffect } from 'preact/hooks'
+import { useContext, useEffect } from 'preact/hooks'
+import AppState from '../../appState'
 import style from './style.css'
 
 const MovesList = () => {
   const move_list = useSignal([])
-  const generate_move_list = req => {}
-  const generate_moves_section = req => {}
-  const generate_moves_area = req => {
-    Object.entries(req).map((method, moves) => {})
+  const { stores, currentPokemon } = useContext(AppState)
+
+  const generate_move_row = async (move_id, version) => {
+    const move = await stores.value.move.getItem(move_id)
+    const type = await stores.value.type.getItem(move.type)
+    const category = await stores.value.category.getItem(move.category)
+    return (
+      <tr>
+        <td>{move.name}</td>
+        <td>{move.effect[version]}</td>
+        <td>{type.name}</td>
+        <td>{category.name}</td>
+      </tr>
+    )
+  }
+  const generate_moves_section = async moves => {
+    const version = currentPokemon.value.version
+    return Promise.all(moves.map(move => generate_move_row(move, version)))
   }
 
-  useEffect(async () => {
-    const id = currentPokemon.value.id
-    const version = currentPokemon.value.version
-    const { moves } = await stores.value.pokemon_move.getItem(id)
-    const version_moves = moves[version]
-    move_list = generate_move_list(version_moves)
-  }, [currentPokemon.value.id, currentPokemon.value.version])
-
-  if (!currentPokemon.value.id || !currentPokemon.value.version) return ''
-  return <div class={style.moves_area}>{move_list.value}</div>
-  return (
-    <section id={method}>
-      <header>
-        <h2>{method}</h2>
-        <p class='tagline'>{method}</p>
-      </header>
+  const generate_move_list = async moves => {
+    const move_section = await generate_moves_section(moves)
+    return (
       <table>
         <tr>
           <th>Name</th>
@@ -34,31 +36,38 @@ const MovesList = () => {
           <th>Category</th>
           <th>Type</th>
         </tr>
-        {moves.map(move => (
-          <tr>
-            <td class={style.move_name}>{move.name}</td>
-            <td class={style.move_effect}>{move.effect}</td>
-            <td
-              style={`background-color:${
-                typeColors[move.type.name]
-              };color:rgba(0,0,0,0.5)`}
-              class={style.move_type}
-            >
-              {startCase(move.type.name)}
-            </td>
-            <td
-              style={`background-color:${
-                categoryColors[move.damage_class.name]
-              };color:rgba(255,255,255,0.75)`}
-              class={style.move_category}
-            >
-              {startCase(move.damage_class.name)}
-            </td>
-          </tr>
-        ))}
+        {move_section}
       </table>
-    </section>
-  )
+    )
+  }
+  const generate_moves_area = req => {
+    return Promise.all(
+      Object.entries(req).map(async ([method_id, moves]) => {
+        const method = await stores.value.move_learn_method.getItem(method_id)
+        const move_list = await generate_move_list(moves)
+        return (
+          <section id={method.id}>
+            <header>
+              <h2>{method.name}</h2>
+              <p class='tagline'>{method.description}</p>
+            </header>
+            {move_list}
+          </section>
+        )
+      })
+    )
+  }
+
+  useEffect(async () => {
+    const id = currentPokemon.value.id
+    const version = currentPokemon.value.version
+    const { moves } = await stores.value.pokemon_move.getItem(id)
+    const version_moves = moves[version]
+    move_list.value = await generate_moves_area(version_moves)
+  }, [currentPokemon.value.id, currentPokemon.value.version])
+
+  if (!currentPokemon.value.id || !currentPokemon.value.version) return ''
+  return <div class={style.moves_area}>{move_list.value}</div>
 }
 
 export default MovesList

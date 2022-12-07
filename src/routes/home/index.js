@@ -34,9 +34,9 @@ const Home = () => {
         <VersionSelector />
       </div>
       <PokedexArea />
+        <MovesList/>
       {/*
         <AbilityList pokemon={currentPokemon.value} />
-        <MovesList pokemon={currentPokemon.value} />
   */}
     </div>
   )
