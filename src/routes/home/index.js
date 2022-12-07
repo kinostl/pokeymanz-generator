@@ -30,14 +30,10 @@ const Home = () => {
       </p>
       <p>Note - You need to resize images yourself.</p>
       <PokemonSearch style='width:100%;' />
-      <div>
-        <VersionSelector />
-      </div>
+      <VersionSelector />
       <PokedexArea />
-        <MovesList/>
-      {/*
-        <AbilityList pokemon={currentPokemon.value} />
-  */}
+      <AbilityList />
+      <MovesList />
     </div>
   )
 }
