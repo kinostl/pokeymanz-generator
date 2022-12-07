@@ -12,12 +12,15 @@ const MovesList = () => {
     const move = await stores.value.move.getItem(move_id)
     const type = await stores.value.type.getItem(move.type)
     const category = await stores.value.category.getItem(move.category)
+    const type_style = `background-color:${type.color};color:rgba(0,0,0,0.5)`
+    const category_style = `background-color:${category.color};color:rgba(0,0,0,0.5)`
+
     return (
       <tr>
         <td>{move.name}</td>
         <td>{move.effect[version]}</td>
-        <td>{type.name}</td>
-        <td>{category.name}</td>
+        <td style={type_style}>{type.name}</td>
+        <td style={category_style}>{category.name}</td>
       </tr>
     )
   }
