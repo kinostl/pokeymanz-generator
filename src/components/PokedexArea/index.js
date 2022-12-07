@@ -29,19 +29,24 @@ const PokedexArea = () => {
     const version = currentPokemon.value.version
     const { entries } = await stores.value.pokemon_entry.getItem(id)
     const { versions } = await stores.value.version_group.getItem(version)
-    console.log(versions)
-    red_flavor_text.value = entries[versions[0]]
-    blue_flavor_text.value = entries[versions[1]]
+    red_flavor_text.value = entries[versions[0]] || ''
+    blue_flavor_text.value = entries[versions[1]] || ''
   }
 
   useEffect(async () => {
     const id = currentPokemon.value.id
     const { details } = await stores.value.pokemon.getItem(id)
+    const _type1 = details.types[0]
+      ? await stores.value.type.getItem(details.types[0])
+      : { name: '' }
+    const _type2 = details.types[1]
+      ? await stores.value.type.getItem(details.types[1])
+      : { name: '' }
     name.value = await stores.value.pokemon_name.getItem(id)
     name.value = name.value.name
     category.value = details.category
-    type1.value = details.types[0] || ''
-    type2.value = details.types[1] || ''
+    type1.value = _type1.name
+    type2.value = _type2.name
     feet.value = details.height.feet
     andInches.value = details.height.andInches
     meters.value = details.height.meters

@@ -182,8 +182,9 @@ function defineVersionGroup (versions, version_groups) {
 
 const [
   ability,
-  category_canvas,
   move,
+  move_learn_method,
+  category_canvas,
   type_canvas,
   version,
   version_group_canvas,
@@ -194,8 +195,9 @@ const [
   pokemon_name
 ] = await Promise.all([
   getDefinition('ability'),
-  getDefinition('move-damage-class'),
   getDefinition('move'),
+  getDefinition('move-learn-method'),
+  getDefinition('move-damage-class'),
   getDefinition('type'),
   getDefinition('version'),
   getDefinition('version-group'),
@@ -218,10 +220,10 @@ const version_group = defineVersionGroup(version, version_group_canvas)
 
 const writePromises = Object.entries({
   ability,
+  move,
+  move_learn_method,
   category,
   type,
-  move,
-  version,
   version_group,
   pokemon,
   pokemon_move,
