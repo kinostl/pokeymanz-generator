@@ -4,3 +4,6 @@
 [submodule "tools/deps/api-data"]
 	path = tools/deps/api-data
 	url = https://github.com/PokeAPI/api-data
+[submodule "tools/deps/sprites"]
+	path = tools/deps/sprites
+	url = https://github.com/PokeAPI/sprites
