@@ -6,6 +6,7 @@ import fs from 'node:fs/promises'
 import convert from 'convert'
 import { dirname } from 'path'
 import { fileURLToPath } from 'url'
+import startCase from 'lodash/startCase.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -130,6 +131,11 @@ function defineColors (data) {
   return data
 }
 
+function fixCapitalization (data) {
+  data.forEach(datum => (datum.name = startCase(datum.name)))
+  return data
+}
+
 function definePokemon (pokemons, categories) {
   pokemons.forEach(pokemon => {
     pokemon.details.category = categories[pokemon.id]
@@ -208,7 +214,8 @@ const [
   getPokemonNames()
 ])
 
-const category = defineColors(category_canvas)
+const category_colorized = defineColors(category_canvas)
+const category = fixCapitalization(category_colorized)
 const type = defineColors(type_canvas)
 const pokemon_category = pokemon_category_canvas.reduce(
   (obj, item) => ((obj[item.id] = item.category), obj),
