@@ -90,7 +90,7 @@ const Home = () => {
         </a>{' '}
         or Direct Message ZoneBooth (Trick Room) on the Pokeymanz server.
       </p>
-      <p>Note - You need to resize images yourself.</p>
+      <p>Note - You need to copy and resize images yourself.</p>
       {stores.value ? <MainArea /> : ''}
     </div>
   )
