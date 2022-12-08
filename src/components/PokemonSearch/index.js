@@ -1,26 +1,40 @@
 import { h } from 'preact'
-import { useContext } from 'preact/hooks'
+import { useEffect, useContext } from 'preact/hooks'
 import { useSignal } from '@preact/signals'
 import style from './style.css'
-import getFormattedPokemon from '../../lib/getFormattedPokemon'
 import AppState from '../../appState'
 
 const PokemonSearch = () => {
+  const { stores, currentPokemon } = useContext(AppState)
+
   const pokemonSearchError = useSignal('')
   const currentPokemonInput = useSignal('')
-  const { loading, listOfPokemonNames, currentPokemon, currentPokemonName } =
-    useContext(AppState)
+  const listOfPokemonNames = useSignal([])
+  const listOfPokemonIds = useSignal([])
+  const nameIdMap = useSignal({})
+
+  useEffect(async () => {
+    const names = []
+    const ids = []
+    const _nameIdMap = {}
+    await stores.value.pokemon_name.iterate(({ id, name, order }) => {
+      names[order] = <option value={name} />
+      ids[order] = id
+      _nameIdMap[name.toLowerCase()] = id
+    })
+    listOfPokemonNames.value = names
+    listOfPokemonIds.value = ids
+    nameIdMap.value = _nameIdMap
+  }, [stores.value.pokemon_name])
 
   const onSubmit = async e => {
     e.preventDefault()
     pokemonSearchError.value = ''
-    const pokemon = currentPokemonInput.value.toLowerCase()
-    if (listOfPokemonNames.value.includes(pokemon)) {
-      currentPokemonName.value = pokemon
-      loading.value = true
-      const formattedPokemon = await getFormattedPokemon(pokemon)
-      currentPokemon.value = formattedPokemon
-      loading.value = false
+    const pokemon = nameIdMap.value[currentPokemonInput.value.toLowerCase()]
+    if (pokemon && listOfPokemonIds.value.includes(pokemon)) {
+      currentPokemon.value = {
+        id: pokemon
+      }
     } else {
       pokemonSearchError.value = 'Could not find that pokemon'
     }
@@ -40,12 +54,7 @@ const PokemonSearch = () => {
         <input type='submit' value='Search by Pokemon' />
       </form>
       <p>{pokemonSearchError}</p>
-
-      <datalist id='pokemon'>
-        {listOfPokemonNames.value.map(entry => (
-          <option value={entry}></option>
-        ))}
-      </datalist>
+      <datalist id='pokemon'>{listOfPokemonNames.value}</datalist>
     </div>
   )
 }

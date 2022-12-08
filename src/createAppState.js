@@ -1,11 +1,14 @@
 import { signal, computed } from '@preact/signals'
 
 function createAppState () {
-  const currentPokemonName = signal('')
   const currentPokemon = signal({})
-  const listOfPokemonNames = signal([])
-  const loading = signal(false) // gonna be honest this one seems like a hack
+  const stores = signal({})
+  const loading = signal(true)
 
-  return { loading, currentPokemonName, currentPokemon, listOfPokemonNames }
+  return {
+    currentPokemon,
+    stores,
+    loading
+  }
 }
 export default createAppState

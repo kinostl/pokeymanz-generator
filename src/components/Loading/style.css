@@ -1,0 +1,16 @@
+.rotate {
+  animation: rotation 2s infinite linear;
+}
+
+.pokeball {
+  height: 1em;
+}
+
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(359deg);
+  }
+}
