@@ -69,7 +69,7 @@ const PokedexArea = () => {
   return (
     <table style='width:100%;'>
       <tr>
-        <td rowSpan={7}>
+        <td rowSpan={7} style='min-width: 288px;'>
           <img src={image.value} class={style.pokeSprite} />
         </td>
 
