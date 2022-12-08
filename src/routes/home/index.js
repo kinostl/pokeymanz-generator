@@ -1,5 +1,5 @@
 import { h } from 'preact'
-import { useContext, useEffect } from 'preact/hooks'
+import { useContext, useEffect, useRef } from 'preact/hooks'
 import AppState from '../../appState'
 import style from './style.css'
 // Code-splitting is automated for `routes` directory
@@ -11,12 +11,15 @@ import MovesList from '../../components/MovesList'
 import PokedexArea from '../../components/PokedexArea'
 import VersionSelector from '../../components/VersionSelector'
 import Loading from '../../components/Loading'
+import CopyButton from '../../components/CopyButton'
 import { useSignal } from '@preact/signals'
 import loadStores from '../../lib/loadStores'
 
 const Home = () => {
   const { loading, stores } = useContext(AppState)
   const consent = useSignal(false)
+  const copyArea = useRef(null)
+
   useEffect(async () => {
     consent.value = await stores.value.consent.getItem('consent')
   }, [stores.value])
@@ -68,9 +71,16 @@ const Home = () => {
         <>
           <PokemonSearch style='width:100%;' />
           <VersionSelector />
-          <PokedexArea />
-          <AbilityList />
-          <MovesList />
+          {typeof ClipboardItem !== 'undefined' ? (
+            <CopyButton copyRef={copyArea} />
+          ) : (
+            ''
+          )}
+          <div id='copySection' ref={copyArea}>
+            <PokedexArea />
+            <AbilityList />
+            <MovesList />
+          </div>
         </>
       )
     }
