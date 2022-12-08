@@ -11,12 +11,11 @@ import baseroute from '../baseroute'
 //<Home path={`${baseroute}/pkmn/:name`} />
 const effectLock = 'pokemon'
 const App = () => {
-  const { stores } = useContext(AppState)
+  const { stores, loading } = useContext(AppState)
   useEffect(async () => {
-    stores.value = await loadStores()
+    stores.value = await loadStores(loading)
   }, [effectLock])
 
-  if (!stores.value) return 'Loading a lot of data.'
   return (
     <div id='app'>
       <Router>

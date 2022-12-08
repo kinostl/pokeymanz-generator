@@ -6,20 +6,17 @@ import AppState from '../../appState'
 
 const PokemonSearch = () => {
   const { stores, currentPokemon } = useContext(AppState)
-  if (!stores.value.pokemon_name) return <p>Loading data bundle.</p>
 
   const pokemonSearchError = useSignal('')
   const currentPokemonInput = useSignal('')
   const listOfPokemonNames = useSignal([])
   const listOfPokemonIds = useSignal([])
   const nameIdMap = useSignal({})
-  const _loading = useSignal(false)
 
   useEffect(async () => {
     const names = []
     const ids = []
     const _nameIdMap = {}
-    _loading.value = true
     await stores.value.pokemon_name.iterate(({ id, name, order }) => {
       names[order] = <option value={name} />
       ids[order] = id
@@ -28,7 +25,6 @@ const PokemonSearch = () => {
     listOfPokemonNames.value = names
     listOfPokemonIds.value = ids
     nameIdMap.value = _nameIdMap
-    _loading.value = false
   }, [stores.value.pokemon_name])
 
   const onSubmit = async e => {
@@ -44,7 +40,6 @@ const PokemonSearch = () => {
     }
   }
 
-  if (_loading.value) return <p>Loading pokemon names.</p>
   return (
     <div class={style.search}>
       <form onSubmitCapture={onSubmit}>

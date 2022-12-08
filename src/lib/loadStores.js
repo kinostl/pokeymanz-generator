@@ -1,5 +1,6 @@
 import localforage from 'localforage'
 import loadSprites from './loadSprites'
+
 const objectMap = async (obj, fn) =>
   Object.fromEntries(
     await Promise.all(
@@ -40,7 +41,8 @@ async function createStores () {
         'type',
         'version',
         'version_group',
-        'sprite'
+        'sprite',
+        'consent'
       ].map(async storeName => [
         storeName,
         await localforage.createInstance({
@@ -56,16 +58,23 @@ async function populateStore (data, store) {
   return Promise.allSettled(data.map(row => store.setItem(`${row.id}`, row)))
 }
 
-async function loadStores () {
+async function loadStores (loading) {
   //TODO make this conditional based on a version number or something.
   //TODO give the user an option to download the bundle again for whatever reason.
 
   const stores = await createStores()
+  const hasConsent = await stores.consent.getItem('consent')
+  if (!hasConsent) {
+    await stores.consent.setItem('consent', false)
+    return stores
+  }
+
   const emptyStores = await objectFilterKeys(stores, async (store, name) => {
     const length = await store.length()
     return length === 0
   })
-  if (emptyStores.length > 0) {
+
+  if (emptyStores.length > 0 && hasConsent) {
     await Promise.allSettled(
       emptyStores
         .map(emptyStore => ({
@@ -73,16 +82,25 @@ async function loadStores () {
           store: stores[emptyStore]
         }))
         .map(async ({ key, store }) => {
+          loading.value = {
+            ...loading.value,
+            [key]: `Downloading ${key}`
+          }
           if (key !== 'sprite') {
             const data = await downloadData(key)
             await populateStore(data, store)
           } else {
             await loadSprites(store)
           }
+          loading.value = {
+            ...loading.value,
+            [key]: false
+          }
         })
     )
   }
 
+  loading.value = false
   return stores
 }
 
