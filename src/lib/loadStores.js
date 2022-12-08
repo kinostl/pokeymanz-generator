@@ -39,7 +39,8 @@ async function createStores () {
         'move_learn_method',
         'type',
         'version',
-        'version_group'
+        'version_group',
+        'sprite'
       ].map(async storeName => [
         storeName,
         await localforage.createInstance({
@@ -72,12 +73,15 @@ async function loadStores () {
           store: stores[emptyStore]
         }))
         .map(async ({ key, store }) => {
-          const data = await downloadData(key)
-          await populateStore(data, store)
+          if (key !== 'sprite') {
+            const data = await downloadData(key)
+            await populateStore(data, store)
+          } else {
+            await loadSprites(store)
+          }
         })
     )
   }
-  stores.sprite = await loadSprites()
 
   return stores
 }

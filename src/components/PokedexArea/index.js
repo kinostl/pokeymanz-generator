@@ -8,6 +8,7 @@ import AppState from '../../appState'
 
 const PokedexArea = () => {
   const { stores, currentPokemon } = useContext(AppState)
+  if (!currentPokemon.value.id || !currentPokemon.value.version) return ''
   //All these signals are because of how optimizing preact works.
 
   const name = useSignal('')
@@ -41,10 +42,10 @@ const PokedexArea = () => {
     const _image = await stores.value.sprite.getItem(id)
     const _type1 = details.types[0]
       ? await stores.value.type.getItem(details.types[0])
-      : { name: '' }
+      : { name: '', color: 'transparent' }
     const _type2 = details.types[1]
       ? await stores.value.type.getItem(details.types[1])
-      : { name: '' }
+      : { name: '', color: 'transparent' }
     name.value = await stores.value.pokemon_name.getItem(id)
     name.value = name.value.name
     category.value = details.category
@@ -65,7 +66,6 @@ const PokedexArea = () => {
 
   useEffect(updateVersion, [currentPokemon.value.version])
 
-  if (!currentPokemon.value.id || !currentPokemon.value.version) return ''
   return (
     <table style='width:100%;'>
       <tr>

@@ -5,14 +5,15 @@ import style from './style.css'
 import AppState from '../../appState'
 
 const PokemonSearch = () => {
+  const { stores, currentPokemon } = useContext(AppState)
+  if (!stores.value.pokemon_name) return <p>Loading data bundle.</p>
+
   const pokemonSearchError = useSignal('')
   const currentPokemonInput = useSignal('')
   const listOfPokemonNames = useSignal([])
   const listOfPokemonIds = useSignal([])
   const nameIdMap = useSignal({})
   const _loading = useSignal(false)
-
-  const { loading, stores, currentPokemon } = useContext(AppState)
 
   useEffect(async () => {
     const names = []
@@ -43,7 +44,6 @@ const PokemonSearch = () => {
     }
   }
 
-  if (loading.value.stores) return <p>Loading data bundle.</p>
   if (_loading.value) return <p>Loading pokemon names.</p>
   return (
     <div class={style.search}>

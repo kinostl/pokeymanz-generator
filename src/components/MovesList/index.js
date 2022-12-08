@@ -5,8 +5,10 @@ import AppState from '../../appState'
 import style from './style.css'
 
 const MovesList = () => {
-  const move_list = useSignal([])
   const { stores, currentPokemon } = useContext(AppState)
+  if (!currentPokemon.value.id || !currentPokemon.value.version) return ''
+
+  const move_list = useSignal([])
 
   const generate_move_row = async (move_id, version) => {
     const move = await stores.value.move.getItem(move_id)
@@ -69,7 +71,6 @@ const MovesList = () => {
     move_list.value = await generate_moves_area(version_moves)
   }, [currentPokemon.value.id, currentPokemon.value.version])
 
-  if (!currentPokemon.value.id || !currentPokemon.value.version) return ''
   return <div class={style.moves_area}>{move_list.value}</div>
 }
 

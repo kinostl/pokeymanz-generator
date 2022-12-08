@@ -10,29 +10,16 @@ import untar from 'js-untar'
 import localforage from 'localforage'
 
 async function downloadSprites () {
-  /*
   const res = await fetch(`./assets/sprites.tar`)
   return await res.arrayBuffer()
-  */
-  return null
 }
 
-async function loadSprites () {
-  const [store, sprites] = await Promise.all([
-    localforage.createInstance({
-      name: 'pokedex',
-      storeName: 'sprite'
-    }),
-    downloadSprites()
-  ])
+async function loadSprites (store) {
+  const sprites = await downloadSprites()
 
-  /*
   await untar(sprites).progress(sprite => {
     store.setItem(sprite.name, sprite.blob)
   })
-  */
-
-  return store
 }
 
 export default loadSprites
