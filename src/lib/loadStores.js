@@ -1,4 +1,5 @@
 import localforage from 'localforage'
+import loadSprites from './loadSprites'
 const objectMap = async (obj, fn) =>
   Object.fromEntries(
     await Promise.all(
@@ -76,6 +77,7 @@ async function loadStores () {
         })
     )
   }
+  stores.sprite = await loadSprites()
 
   return stores
 }

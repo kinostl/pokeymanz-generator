@@ -23,6 +23,8 @@ const PokedexArea = () => {
   const kg = useSignal('')
   const red_flavor_text = useSignal('')
   const blue_flavor_text = useSignal('')
+  const image = useSignal('')
+  const prevImage = useSignal('')
 
   async function updateVersion () {
     const id = currentPokemon.value.id
@@ -36,6 +38,7 @@ const PokedexArea = () => {
   useEffect(async () => {
     const id = currentPokemon.value.id
     const { details } = await stores.value.pokemon.getItem(id)
+    const _image = await stores.value.sprite.getItem(id)
     const _type1 = details.types[0]
       ? await stores.value.type.getItem(details.types[0])
       : { name: '' }
@@ -47,19 +50,17 @@ const PokedexArea = () => {
     category.value = details.category
     type1.value = _type1.name
     type2.value = _type2.name
+    type1style.value = `background-color:${_type1.color};color:rgba(0,0,0,0.5)`
+    type2style.value = `background-color:${_type2.color};color:rgba(0,0,0,0.5)`
     feet.value = details.height.feet
     andInches.value = details.height.andInches
     meters.value = details.height.meters
     lb.value = details.weight.lb
     kg.value = details.weight.kg
+    window.URL.revokeObjectURL(prevImage.value)
+    image.value = window.URL.createObjectURL(_image)
+    prevImage.value = image.value
     await updateVersion()
-
-    // < 10 ? `0${pokemon.height.andInches}` : andInches
-    /*
-            style={`background-color:${
-              typeColors[pokemon.types[0].type.name]
-            };color:rgba(0,0,0,0.5)`}
-    */
   }, [currentPokemon.value.id])
 
   useEffect(updateVersion, [currentPokemon.value.version])
@@ -69,9 +70,7 @@ const PokedexArea = () => {
     <table style='width:100%;'>
       <tr>
         <td rowSpan={7}>
-          {/*
-          <img src={pokemon.sprites.front_default} class={style.pokeSprite} />
-  */}
+          <img src={image.value} class={style.pokeSprite} />
         </td>
 
         <td colSpan={3}>{name}</td>

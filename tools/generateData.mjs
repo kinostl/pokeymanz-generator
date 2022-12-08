@@ -224,6 +224,9 @@ const pokemon_category = pokemon_category_canvas.reduce(
 const pokemon = definePokemon(pokemon_canvas, pokemon_category)
 const pokemon_version = definePokemonVersion(pokemon_move)
 const version_group = defineVersionGroup(version, version_group_canvas)
+const pokemon_name_id_map = Object.fromEntries(
+  pokemon_name.map(_pokemon => [`${_pokemon.order}.png`, _pokemon.id])
+)
 
 const writePromises = Object.entries({
   ability,
@@ -239,6 +242,13 @@ const writePromises = Object.entries({
   pokemon_version
 }).map(([key, value]) =>
   fs.writeFile(`${OUTPUT_FOLDER}/${key}.json`, JSON.stringify(value))
+)
+
+writePromises.push(
+  fs.writeFile(
+    `${__dirname}/pokemon_name_id_map.json`,
+    JSON.stringify(pokemon_name_id_map)
+  )
 )
 
 await Promise.all(writePromises)
