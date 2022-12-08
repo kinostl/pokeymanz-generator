@@ -38,7 +38,6 @@
   },
   "dependencies": {
     "@preact/signals": "^1.1.2",
-    "html-to-docx": "^1.6.4",
     "js-untar": "^2.0.0",
     "localforage": "^1.10.0",
     "preact": "^10.3.2",
