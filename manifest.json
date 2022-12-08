@@ -1,19 +1,19 @@
 {
   "name": "Pokeymanz Custom Pokemon Generator",
   "short_name": "Pkmnz Gen",
-  "start_url": "https://kinostl.github.io/pokeymanz-generator/",
+  "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#fff",
   "theme_color": "#ef5350",
   "icons": [
     {
-      "src": "https://kinostl.github.io/pokeymanz-generator/assets/icons/android-chrome-192x192.png",
+      "src": "./assets/icons/android-chrome-192x192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "https://kinostl.github.io/pokeymanz-generator/assets/icons/android-chrome-512x512.png",
+      "src": "./assets/icons/android-chrome-512x512.png",
       "type": "image/png",
       "sizes": "512x512"
     }
