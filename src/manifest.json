@@ -1,7 +1,7 @@
 {
   "name": "Pokeymanz Custom Pokemon Generator",
   "short_name": "Pkmnz Gen",
-  "start_url": "/",
+  "start_url": "https://kinostl.github.io/pokeymanz-generator/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#fff",
