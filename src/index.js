@@ -1,3 +1,4 @@
+import 'picnic'
 import './style'
 import AppComponent from './components/app'
 import { createContext } from 'preact'
