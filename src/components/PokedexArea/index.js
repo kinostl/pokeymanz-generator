@@ -36,37 +36,7 @@ const PokedexArea = () => {
     blue_flavor_text.value = entries[versions[1]] || ''
   }
 
-  useEffect(async () => {
-    const id = currentPokemon.value.id
-    const { details } = await stores.value.pokemon.getItem(id)
-    const _image = await stores.value.sprite.getItem(id)
-    const _type1 = details.types[0]
-      ? await stores.value.type.getItem(details.types[0])
-      : { name: '', color: 'transparent' }
-    const _type2 = details.types[1]
-      ? await stores.value.type.getItem(details.types[1])
-      : { name: '', color: 'transparent' }
-    name.value = await stores.value.pokemon_name.getItem(id)
-    name.value = name.value.name
-    category.value = details.category
-    type1.value = _type1.name
-    type2.value = _type2.name
-    type1style.value = `background-color:${_type1.color};color:rgba(0,0,0,0.5)`
-    type2style.value = `background-color:${_type2.color};color:rgba(0,0,0,0.5)`
-    feet.value = details.height.feet
-    andInches.value = details.height.andInches
-    meters.value = details.height.meters
-    lb.value = details.weight.lb
-    kg.value = details.weight.kg
-    window.URL.revokeObjectURL(prevImage.value)
-    image.value = window.URL.createObjectURL(_image)
-    prevImage.value = image.value
-    await updateVersion()
-  }, [currentPokemon.value.id])
-
-  useEffect(updateVersion, [currentPokemon.value.version])
-
-  return (
+  const DesktopTable = () => (
     <table style='width:100%;'>
       <tr>
         <td rowSpan={7} style='min-width: 288px;'>
@@ -103,6 +73,38 @@ const PokedexArea = () => {
       </tr>
     </table>
   )
+
+  useEffect(async () => {
+    const id = currentPokemon.value.id
+    const { details } = await stores.value.pokemon.getItem(id)
+    const _image = await stores.value.sprite.getItem(id)
+    const _type1 = details.types[0]
+      ? await stores.value.type.getItem(details.types[0])
+      : { name: '', color: 'transparent' }
+    const _type2 = details.types[1]
+      ? await stores.value.type.getItem(details.types[1])
+      : { name: '', color: 'transparent' }
+    name.value = await stores.value.pokemon_name.getItem(id)
+    name.value = name.value.name
+    category.value = details.category
+    type1.value = _type1.name
+    type2.value = _type2.name
+    type1style.value = `background-color:${_type1.color};color:rgba(0,0,0,0.5)`
+    type2style.value = `background-color:${_type2.color};color:rgba(0,0,0,0.5)`
+    feet.value = details.height.feet
+    andInches.value = details.height.andInches
+    meters.value = details.height.meters
+    lb.value = details.weight.lb
+    kg.value = details.weight.kg
+    window.URL.revokeObjectURL(prevImage.value)
+    image.value = window.URL.createObjectURL(_image)
+    prevImage.value = image.value
+    await updateVersion()
+  }, [currentPokemon.value.id])
+
+  useEffect(updateVersion, [currentPokemon.value.version])
+
+  return <DesktopTable />
 }
 
 export default PokedexArea
